@@ -1,0 +1,58 @@
+<div
+    class="flex min-w-0 flex-auto flex-col items-center sm:flex-row sm:justify-center md:items-start md:justify-start"
+>
+    <div
+        class="w-full px-4 py-8 sm:bg-card sm:w-auto sm:rounded-2xl sm:p-12 sm:shadow md:flex md:h-full md:w-1/2 md:items-center md:justify-end md:rounded-none md:p-16 md:shadow-none"
+    >
+        <div class="mx-auto w-full max-w-80 sm:mx-0 sm:w-80">
+            <!-- Logo -->
+            <div class="w-12">
+                <img src="images/logo/logo.svg" alt="Logo" />
+            </div>
+
+            <!-- Titre -->
+            <div class="mt-8 text-4xl font-extrabold leading-tight tracking-tight">
+                OAuth Callback
+            </div>
+
+            <!-- Description ou info -->
+            <div class="mt-4">
+                <p>
+                    Traitement de votre retour OAuth. Veuillez patienter pendant
+                    que nous validons votre authentification...
+                </p>
+            </div>
+
+            <!-- ICI on intègre ton composant custom-oauth-callback -->
+            <custom-oauth-callback></custom-oauth-callback>
+
+            <!-- Lien pour retourner au login (au cas d'erreur) -->
+            <div class="text-secondary mt-8 text-md font-medium">
+                <span>Retour à</span>
+                <a
+                    class="ml-1 text-primary-500 hover:underline"
+                    [routerLink]="['/sign-in']"
+                    >la page de connexion
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zone de droite, identique à l'exemple -->
+    <div
+        class="relative hidden h-full w-1/2 flex-auto items-center justify-center overflow-hidden bg-gray-800 p-16 dark:border-l md:flex lg:px-28"
+    >
+        <!-- Background & décor, si tu veux reprendre l'exact code de `confirmation-required` -->
+        <!-- Rings, Dots, etc. -->
+        <!-- … -->
+        <div class="relative z-10 w-full max-w-2xl text-gray-100">
+            <div class="text-7xl font-bold leading-none">
+                <div>Welcome to</div>
+                <div>our community</div>
+            </div>
+            <div class="mt-6 text-lg leading-6 tracking-tight text-gray-400">
+                Here you can show an illustration or text about the OAuth flow...
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,317 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum NavigationType {
+  USER
+  ADMIN
+}
+
+// Enumération pour les Types d'Authentification
+enum AuthenticationMethod {
+  CLASSIC
+  EMAIL
+  OAUTH
+  WEB3
+  AUTHENTICATOR
+  PHONE
+}
+
+// En,um pourles types d'actions sensibles 
+enum SecureAction {
+  CHANGE_EMAIL
+  DELETE_ACCOUNT
+  ALL
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model Navigation {
+  id          Int            @id @default(autoincrement())
+  type        NavigationType @unique
+  compact     Json
+  default     Json
+  futuristic  Json
+  horizontal  Json
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model User {
+  id                        Int                     @id @default(autoincrement())
+  email                     String?                 @unique
+  isEmailVerified           Boolean                 @default(false)
+  secondaryEmail            String?                 @unique
+  isSecondaryEmailVerified  Boolean                 @default(false)
+  password                  String?
+  name                      String?
+  avatar                    String?
+  status                    String?
+  roles                     UserRole[]
+  createdAt                 DateTime                @default(now())
+  updatedAt                 DateTime                @updatedAt
+  authMethods               AuthenticationMethod[]
+
+  // Relations Existantes
+  passwordResetTokens       PasswordResetToken[]
+  emailChangeTokens         EmailChangeToken[]
+  emailVerificationTokens   EmailVerificationToken[]
+  secondaryEmailDeletionToken SecondaryEmailDeletionToken[]
+  web3Accounts              Web3Account[]           // Relation un-à-plusieurs pour les comptes Web3
+  oauthAccounts             OAuthAccount[]          // Relation un-à-plusieurs pour les comptes OAuth
+  authenticator             Authenticator?          // Authenticator (clé secrète TOTP)
+  phones                    Phone[]                 // Relation un-à-plusieurs pour les téléphones
+  MFATokens                 MFAToken?               // Relation un a unique car pas possible d'entammer deux actions securisées a la fois.
+  emailMFAToken             EmailMFAToken?  
+  MFANonces                 MFANonce[]
+  notifications             Notification[]
+  messages                  Message[]
+  oauthMFATokens            OAuthMFAToken[]  
+  userAuthMethods           UserAuthMethod[]
+}
+
+model UserAuthMethod {
+  id          Int                   @id @default(autoincrement())
+  user        User                  @relation(fields: [userId], references: [id])
+  userId      Int
+  method      AuthenticationMethod
+  methodId    Int?
+  order       Int
+  createdAt   DateTime              @default(now())
+
+  @@unique([userId, method, methodId])
+  @@index([userId, order])
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  icon        String?
+  image       String?
+  time        DateTime @default(now())
+  link        String?
+  useRouter   Boolean  @default(false)
+  read        Boolean  @default(false)
+
+  // Relation avec l'utilisateur
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model MFAToken {
+  id              String          @id @default(uuid())
+  user            User            @relation(fields: [userId], references: [id])
+  userId          Int             @unique
+  token           String          @unique
+  action          SecureAction
+  stepsValidated  AuthenticationMethod[]
+  stepsRequired   AuthenticationMethod[]
+  expiresAt       DateTime
+  createdAt       DateTime        @default(now())
+  used            Boolean         @default(false)
+
+  @@index([userId, action])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  icon        String?
+  image       String?
+  time        DateTime
+  link        String?
+  useRouter   Boolean  @default(false)
+  read        Boolean  @default(false)
+
+  // Relation avec l'utilisateur
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Authenticator {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int      @unique
+  secret      String   // Clé secrète TOTP
+  qrCodeURL   String   @unique
+  enabled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Phone {
+  id           Int                   @id @default(autoincrement())
+  user         User                  @relation(fields: [userId], references: [id])
+  userId       Int
+  phoneNumber  String                @unique
+  isVerified   Boolean               @default(false)
+  createdAt    DateTime              @default(now())
+  
+  // Relation avec les Tokens de Vérification (optionnel)
+  verificationTokens PhoneVerificationToken[]
+}
+
+model PhoneVerificationToken {
+  id        Int      @id @default(autoincrement())
+  phone     Phone    @relation(fields: [phoneId], references: [id])
+  phoneId   Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// Modèle pour les Comptes Web3
+model Web3Account {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  wallet    String   @unique           // Adresse du wallet
+  createdAt DateTime @default(now())
+
+  @@index([wallet], name: "idx_web3_wallet")
+}
+
+// Modèle pour les Comptes OAuth
+model OAuthAccount {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int
+  provider     String
+  providerId   String   // ID unique fourni par le fournisseur OAuth
+  email        String
+  accessToken  String?
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@unique([provider, providerId])
+}
+
+// Modèle pour les Tokens MFA OAuth
+model OAuthMFAToken {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  provider   String
+  providerId String
+  token      String   @unique
+  hasBeenValidated Boolean @default(false)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([userId, provider, providerId], name: "idx_oauth_mfa_user_provider")
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model EmailChangeToken {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  emailType EmailType
+  newEmail  String   @unique
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([userId, emailType])
+}
+
+model EmailVerificationToken {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  emailType   EmailType
+  token       String   @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, emailType])
+}
+
+model SecondaryEmailDeletionToken {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  token       String   @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+}
+
+model EmailMFAToken {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
+  code      String      @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  validated Boolean  @default(false)
+
+  @@index([userId])
+}
+
+enum EmailType {
+  PRIMARY
+  SECONDARY
+}
+
+model Nonce {
+  id        Int      @id @default(autoincrement())
+  wallet    String   @unique
+  nonce     String
+  createdAt DateTime @default(now())
+
+  @@index([wallet], name: "idx_nonce_wallet")
+}
+
+model MFANonce {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  wallet    String   @unique
+  nonce     String
+  hasBeenValidated Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([wallet], name: "idx_MFA_nonce_wallet")
+}
+
+model Version {
+  id        Int      @id @default(autoincrement())
+  backend   String
+  frontend  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contract {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  address   String   @unique
+  abi       Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

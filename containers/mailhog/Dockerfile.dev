@@ -1,0 +1,16 @@
+FROM mailhog/mailhog
+
+# Forcer l'utilisateur root pour l'installation (si besoin)
+USER root
+
+# Copier le script d'initialisation personnalisé avec les permissions appropriées
+COPY --chmod=755 ./scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Copier le script de vérification de santé
+COPY --chmod=755 ./scripts/check_health.sh /usr/local/bin/check_health.sh
+
+# Installer su-exec (équivalent de gosu sur Alpine)
+RUN apk add --no-cache su-exec
+
+# Laisser l'entrypoint tel quel, il gérera la descente aux privilèges
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

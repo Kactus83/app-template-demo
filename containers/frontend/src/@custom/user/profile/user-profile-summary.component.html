@@ -1,0 +1,19 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <!-- Conteneur principal -->
+    <div class="flex-auto p-6 sm:p-10">
+        <!-- Zone de résumé du profil -->
+        <div class="rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center">
+            <!-- Affichage de l'avatar ou icône par défaut -->
+            <ng-container *ngIf="user?.avatar; else noAvatar">
+                <img [src]="user?.avatar" alt="Avatar" class="w-24 h-24 rounded-full mb-4">
+            </ng-container>
+            <ng-template #noAvatar>
+                <mat-icon [svgIcon]="'heroicons_outline:user-circle'" class="w-24 h-24 mb-4"></mat-icon>
+            </ng-template>
+            <!-- Affichage du nom -->
+            <h2 class="text-2xl font-bold mb-2">{{ user?.name || 'Nom Inconnu' }}</h2>
+            <!-- Affichage de l'email -->
+            <p class="text-gray-600">{{ user?.email || 'Email non renseigné' }}</p>
+        </div>
+    </div>
+</div>

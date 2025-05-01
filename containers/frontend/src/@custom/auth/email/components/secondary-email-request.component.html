@@ -1,0 +1,23 @@
+<div class="secondary-email-request">
+    <form [formGroup]="secondaryEmailForm" (ngSubmit)="addSecondaryEmail()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Secondary Email</mat-label>
+        <input matInput type="email" formControlName="secondaryEmail" placeholder="Enter secondary email">
+        <mat-error *ngIf="secondaryEmailForm.get('secondaryEmail')?.hasError('required')">
+          Secondary email is required
+        </mat-error>
+        <mat-error *ngIf="secondaryEmailForm.get('secondaryEmail')?.hasError('email')">
+          Please enter a valid email address
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="secondaryEmailForm.invalid">
+        Add Secondary Email
+      </button>
+    </form>
+    <div class="alert" *ngIf="showAlert">
+      <div [ngClass]="{'success': alertType==='success', 'error': alertType==='error'}">
+        {{ alertMessage }}
+      </div>
+    </div>
+  </div>
+  

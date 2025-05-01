@@ -1,0 +1,28 @@
+.authenticator-management {
+    max-width: 500px;
+    margin: auto;
+    text-align: center;
+    .header {
+      margin-bottom: 1rem;
+      .title {
+        font-size: 1.75rem;
+        font-weight: bold;
+      }
+    }
+    .loading {
+      font-size: 1.1rem;
+      color: #757575;
+    }
+    .error {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 1rem;
+      .back-link {
+        color: #3f51b5;
+        text-decoration: none;
+      }
+    }
+  }
+  

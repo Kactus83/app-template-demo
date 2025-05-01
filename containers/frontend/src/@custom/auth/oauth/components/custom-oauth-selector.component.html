@@ -1,0 +1,17 @@
+<div class="oauth-selector">
+    <button mat-stroked-button color="primary" (click)="toggleOverlay()" class="oauth-selector-button">
+      <mat-icon class="oauth-main-icon">group</mat-icon>
+      <span class="oauth-button-label">Sign in with Social</span>
+      <mat-icon class="oauth-arrow-icon" *ngIf="!showOverlay">expand_more</mat-icon>
+      <mat-icon class="oauth-arrow-icon" *ngIf="showOverlay">expand_less</mat-icon>
+    </button>
+  
+    <div class="oauth-overlay" *ngIf="showOverlay">
+      <div class="oauth-options">
+        <button mat-icon-button *ngFor="let provider of providers" (click)="onProviderSelect(provider)">
+          <mat-icon [svgIcon]="'feather:' + provider"></mat-icon>
+        </button>        
+      </div>
+    </div>
+  </div>
+  

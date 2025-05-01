@@ -1,0 +1,40 @@
+<div class="flex min-w-0 flex-auto flex-col">
+    <div class="flex-auto p-6 sm:p-10">
+        <!-- Menu des onglets -->
+        <nav class="mb-4">
+            <ul class="flex space-x-4">
+                <li>
+                    <button (click)="setActiveTab('email')" 
+                            [class.font-bold]="activeTab === 'email'" 
+                            class="hover:underline focus:outline-none">
+                        Email
+                    </button>
+                </li>
+                <li>
+                    <button (click)="setActiveTab('phone')" 
+                            [class.font-bold]="activeTab === 'phone'" 
+                            class="hover:underline focus:outline-none">
+                        Phone
+                    </button>
+                </li>
+                <li>
+                    <button (click)="setActiveTab('authenticator')" 
+                            [class.font-bold]="activeTab === 'authenticator'" 
+                            class="hover:underline focus:outline-none">
+                        Authenticator
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        <!-- Affichage de la vue active -->
+        <div *ngIf="activeTab === 'email'">
+            <user-email-settings [user]="user"></user-email-settings>
+        </div>
+        <div *ngIf="activeTab === 'phone'">
+            <custom-phone-management></custom-phone-management>
+        </div>
+        <div *ngIf="activeTab === 'authenticator'">
+            <custom-authenticator-management></custom-authenticator-management>
+        </div>
+    </div>
+</div>

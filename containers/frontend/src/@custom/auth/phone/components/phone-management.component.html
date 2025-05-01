@@ -1,0 +1,35 @@
+<div class="phone-management">
+    <!-- Formulaire d'ajout de numéro -->
+    <form [formGroup]="phoneForm" (ngSubmit)="addPhone()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Phone Number</mat-label>
+        <input matInput type="text" formControlName="phoneNumber" placeholder="Enter phone number">
+        <mat-error *ngIf="phoneForm.get('phoneNumber')?.hasError('required')">
+          Phone number is required
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="phoneForm.invalid">
+        Add Phone
+      </button>
+    </form>
+    <!-- Alert -->
+    <div class="alert" *ngIf="showAlert">
+      <div [ngClass]="{'success': alertType === 'success', 'error': alertType === 'error'}">
+        {{ alertMessage }}
+      </div>
+    </div>
+    <!-- Liste des numéros -->
+    <div class="phone-list-items" *ngIf="phones && phones.length > 0">
+      <h3>Your Phones</h3>
+      <ul>
+        <li *ngFor="let phone of phones">
+          <span>{{ phone.phoneNumber }} ({{ phone.isVerified ? 'Verified' : 'Not Verified' }})</span>
+          <div class="actions">
+            <button mat-button color="primary" *ngIf="!phone.isVerified" (click)="validatePhone(phone)">Validate</button>
+            <button mat-button color="warn" (click)="deletePhone(phone.id)">Delete</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  

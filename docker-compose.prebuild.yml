@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  prebuild:
+    build:
+      context: ./containers/blockchain
+      dockerfile: Dockerfile.prebuild
+    environment:
+      DEPLOYER_PRIVATE_KEY: ${DEPLOYER_PRIVATE_KEY}
+    env_file:
+      - .env
+    volumes:
+      - ./containers/containers/blockchain/types:/app/types # Pour la persistance des types dans le conteneur entre le prebuild et le build reel.
+      - ./containers/frontend/src/@custom/web3/dynamic-types:/app/types 
+      - ./containers/backend/src/domains/web3/modules/dynamic/models/types:/app/types
+      - ./dev-deployments:/app/deployments
+    networks:
+      - app-network
+    restart: "no"
+networks:
+  app-network:

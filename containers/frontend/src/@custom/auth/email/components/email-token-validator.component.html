@@ -1,0 +1,23 @@
+<div class="mt-4">
+  <label for="tokenInput" class="block font-medium mb-1">Token</label>
+  <input
+    id="tokenInput"
+    type="text"
+    [(ngModel)]="token"
+    [disabled]="tokenDetected"
+    class="w-full p-2 border rounded"
+    placeholder="Enter token manually if not provided in URL"
+  />
+</div>
+<div class="mt-2">
+  <button (click)="validateToken()" class="px-4 py-2 bg-primary-500 text-white rounded">
+    Validate Token
+  </button>
+</div>
+<div class="mt-4" *ngIf="message">
+  <div class="text-green-600 text-lg">{{ message }}</div>
+  <div class="text-sm text-gray-600">Redirecting to home in 5 seconds...</div>
+</div>
+<div class="mt-4" *ngIf="error">
+  <div class="text-red-600 text-lg">{{ error }}</div>
+</div>

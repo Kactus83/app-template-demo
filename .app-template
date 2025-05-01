@@ -1,0 +1,9 @@
+{
+  "projectName": "app-template",
+  "buildOptions": {
+    "performTests": true,
+    "performLint": true,
+    "hotFrontend": false,
+    "openWindow": false
+  }
+}

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build:
+      context: ./containers/backend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env.prod
+  frontend:
+    build:
+      context: ./containers/frontend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env.prod
+    healthcheck:
+      test: ["CMD", "/scripts/check_health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

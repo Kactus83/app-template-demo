@@ -1,0 +1,21 @@
+# Ajouté pour eviter que git n'ecrase le type de fin de ligne lors des commits
+# Git a tendance a convertir les fin de ligne en fonction du systeme d'exploitation
+
+# Forcer LF pour certains fichiers .sh
+containers/vault/scripts/entrypoint.sh text eol=lf
+containers/vault/scripts/setup_roles.sh text eol=lf
+containers/vault/scripts/setup_roles.sh text eol=lf
+containers/vault/scripts/setup_vault.sh text eol=lf
+containers/backend/entrypoint.sh text eol=lf
+containers/deployments/scripts/entrypoint.sh text eol=lf
+containers/deployments/scripts/monitor_services.sh text eol=lf
+containers/new-backend/entrypoint.sh text eol=lf
+containers/blockchain/start.sh text eol=lf
+containers/database/entrypoint.sh text eol=lf
+containers/mailhog/scripts/entrypoint.sh text eol=lf
+
+# Forcer CRLF pour d'autres fichiers .sh
+# start.sh text eol=crlf
+
+# Conserver le format d'origine pour tous les autres fichiers
+* -text

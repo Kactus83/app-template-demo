@@ -1,0 +1,40 @@
+<div class="authenticator-setup">
+  <h2 class="title">Setup Authenticator</h2>
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="!loading">
+    <div *ngIf="authenticator">
+      <div class="qr-section">
+        <img [src]="authenticator.qrCodeURL" alt="QR Code" class="qr-code"/>
+        <p class="secret">Secret: {{ authenticator.secret }}</p>
+      </div>
+      <!-- Affichage du formulaire d'activation si non activé -->
+      <div class="activation-section" *ngIf="!authenticator.enabled">
+        <form [formGroup]="activationForm" (ngSubmit)="activateAuthenticator()">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>TOTP Code</mat-label>
+            <input matInput type="text" formControlName="totpCode" placeholder="Enter TOTP code">
+            <mat-error *ngIf="activationForm.get('totpCode')?.hasError('required')">
+              TOTP code is required
+            </mat-error>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit" [disabled]="activationForm.invalid || loading">
+            Activate Authenticator
+          </button>
+        </form>
+      </div>
+      <!-- Message si l'authenticator est déjà activé -->
+      <div class="status-section" *ngIf="authenticator.enabled">
+        <span class="success">Authenticator is activated.</span>
+      </div>
+      <button mat-raised-button color="accent" (click)="refreshAuthenticator()" class="refresh-button">
+        Refresh QR Code
+      </button>
+    </div>
+    <div class="message" *ngIf="message && !authenticator?.enabled">
+      <span class="info">{{ message }}</span>
+    </div>
+    <div class="message" *ngIf="error">
+      <span class="error">{{ error }}</span>
+    </div>
+  </div>
+</div>

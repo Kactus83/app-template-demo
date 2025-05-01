@@ -1,0 +1,53 @@
+.authenticator-control {
+  max-width: 500px;
+  margin: auto;
+  text-align: center;
+  .title {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  .loading {
+    font-size: 1.1rem;
+    color: #757575;
+  }
+  .status {
+    margin-bottom: 1rem;
+    p {
+      font-size: 1.2rem;
+      .activated {
+        color: #388e3c;
+        font-weight: bold;
+      }
+      .not-activated {
+        color: #d32f2f;
+        font-weight: bold;
+      }
+    }
+  }
+  .activation-section, .management-section {
+    margin: 1rem 0;
+    .full-width {
+      width: 100%;
+    }
+    .confirmation-field {
+      margin-bottom: 1rem;
+    }
+    .button-group {
+      display: flex;
+      justify-content: space-around;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+  }
+  .message {
+    margin-top: 1rem;
+    .success {
+      color: #388e3c;
+      font-weight: bold;
+    }
+    .error {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+  }
+}

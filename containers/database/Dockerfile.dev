@@ -1,0 +1,14 @@
+# ./database/Dockerfile
+FROM postgres:16
+
+ENV LANG en_US.utf8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.utf8
+
+EXPOSE 5432
+
+# Copier le script d'initialisation personnalisé
+COPY ./scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

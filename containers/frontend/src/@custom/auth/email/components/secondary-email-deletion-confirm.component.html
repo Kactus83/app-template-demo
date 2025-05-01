@@ -1,0 +1,25 @@
+<div class="confirmation-micro">
+  <div class="form-group">
+    <label for="tokenInput" class="block font-medium mb-1">Token</label>
+    <input
+      id="tokenInput"
+      type="text"
+      [(ngModel)]="token"
+      [disabled]="tokenDetected"
+      class="token-input"
+      placeholder="Enter token manually if not provided in URL"
+    />
+  </div>
+  <div class="form-group">
+    <button (click)="confirmDeletion()" class="confirm-button">
+      Validate Token
+    </button>
+  </div>
+  <div class="message" *ngIf="message">
+    <div class="success">{{ message }}</div>
+    <div class="info">Redirecting in 5 seconds...</div>
+  </div>
+  <div class="message" *ngIf="error">
+    <div class="error">{{ error }}</div>
+  </div>
+</div>

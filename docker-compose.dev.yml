@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  database:
+    build:
+      context: ./containers/database
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./dev-deployments/database/data:/var/lib/postgresql/data
+      - ./dev-deployments:/deployments
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "/scripts/check_health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  blockchain:
+    build:
+      context: ./containers/blockchain
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8545:8545"
+    environment:
+      DEPLOYER_PRIVATE_KEY: ${DEPLOYER_PRIVATE_KEY}
+    env_file:
+      - .env
+    volumes:
+      - ./dev-deployments:/app/deployments
+    networks:
+      - app-network
+    restart: always
+    depends_on:
+      - database
+    healthcheck:
+      test: ["CMD", "/scripts/check_health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mailhog:
+    build:
+      context: ./containers/mailhog
+      dockerfile: Dockerfile.dev
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - ./dev-deployments:/deployments
+    networks:
+      - app-network
+    depends_on:
+      - database
+      - blockchain
+    healthcheck:
+      test: ["CMD", "/scripts/check_health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./containers/backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./dev-deployments:/app/deployments
+      - ./dev-deployments/backend/migrations:/app/prisma/migrations
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env
+    depends_on:
+      - database
+      - mailhog
+      - blockchain
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "/scripts/check_health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./containers/frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4200:4200"
+    env_file:
+      - .env
+    volumes:
+      - ./dev-deployments:/app/deployments
+    networks:
+      - app-network
+    depends_on:
+      - database
+      - mailhog
+      - blockchain
+      - backend
+    healthcheck:
+      test: ["CMD", "/scripts/check_health.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:

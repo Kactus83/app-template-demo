@@ -1,0 +1,23 @@
+<div class="email-change-request">
+    <form [formGroup]="emailChangeForm" (ngSubmit)="requestEmailChange()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>New Email</mat-label>
+        <input matInput type="email" formControlName="newEmail" placeholder="Enter your new email">
+        <mat-error *ngIf="emailChangeForm.get('newEmail')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="emailChangeForm.get('newEmail')?.hasError('email')">
+          Please enter a valid email address
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="emailChangeForm.invalid">
+        Request Email Change
+      </button>
+    </form>
+    <div class="alert" *ngIf="showAlert">
+      <div [ngClass]="{'success': alertType === 'success', 'error': alertType === 'error'}">
+        {{ alertMessage }}
+      </div>
+    </div>
+  </div>
+  

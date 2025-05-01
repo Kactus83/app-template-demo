@@ -1,0 +1,69 @@
+# Étape 1 : Construction
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copie des fichiers de configuration
+COPY package*.json ./
+COPY eslint* ./
+COPY tsconfig* ./
+COPY jest* ./
+COPY nest-cli.json ./
+COPY .prettierrc ./ 
+COPY typedoc.json ./
+COPY README.md ./
+
+# Installer les dépendances
+# Legacy-peer-deps est utilisé pour résoudre les problèmes de dépendances
+# entre les packages @sentry/node et winston sentry.
+RUN npm install --legacy-peer-deps
+
+# Copier le reste du code source
+COPY src ./src
+
+# Copier le schéma Prisma et générer le client (commenté pour l'instant)
+COPY prisma ./prisma
+RUN npx prisma generate
+
+# Validation du code source
+RUN npm run lint
+RUN npm run test
+
+# Générer la documentation
+RUN npm run generate-docs
+
+# Copier le script d'entrée (entrypoint)
+COPY scripts/entrypoint.sh ./
+RUN chmod +x entrypoint.sh
+
+# Construire l'application
+RUN npm run build
+
+# Étape 2 : Image Finale
+FROM node:18-slim
+
+WORKDIR /app
+
+RUN apt-get update -y && apt-get install -y openssl
+
+# Installer uniquement les dépendances de production
+COPY package*.json ./
+RUN npm install --only=production --legacy-peer-deps
+
+ # Copier les fichiers de documentation
+COPY --from=builder /app/deployments/docs ./docs
+
+# Copier l'application construite, le client Prisma et le script d'entrée
+COPY --from=builder /app/dist ./dist
+# Copier Prisma
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
+# Copier les modules Prisma 
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Exposer le port de l'application
+EXPOSE 3000
+
+# Définir le script d'entrée
+ENTRYPOINT ["./entrypoint.sh"]

@@ -1,0 +1,27 @@
+# Utiliser une image officielle Node.js
+FROM node:18
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier package.json et package-lock.json
+COPY package*.json ./
+
+# Copier le script de démarrage
+COPY ./scripts/entrypoint.sh .
+COPY ./scripts/check_health.sh .
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le reste des fichiers du projet
+COPY . .
+
+# Rendre le script exécutable
+RUN chmod +x ./check_health.sh
+
+# Exposer le port Hardhat (8545)
+EXPOSE 8545
+
+# Utiliser le script de démarrage pour gérer le nœud et les contrats
+CMD ["./entrypoint.sh"]

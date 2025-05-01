@@ -1,0 +1,61 @@
+<div class="authenticator-control">
+  <h2 class="title">Authenticator Control</h2>
+  <div *ngIf="loading" class="loading">
+    Loading authenticator status...
+  </div>
+  <div *ngIf="!loading && authenticator">
+    <div class="status">
+      <p>
+        Current Status:
+        <span [ngClass]="{'activated': authenticator.enabled, 'not-activated': !authenticator.enabled}">
+          {{ authenticator.enabled ? 'Activated' : 'Not Activated' }}
+        </span>
+      </p>
+    </div>
+    <!-- Si non activé, affiche le formulaire d'activation -->
+    <div *ngIf="!authenticator.enabled" class="activation-section">
+      <p>Please enter the TOTP code to activate your authenticator:</p>
+      <form [formGroup]="controlForm" (ngSubmit)="activateAuthenticator()">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>TOTP Code</mat-label>
+          <input matInput type="text" formControlName="totpCode" placeholder="Enter TOTP code">
+          <mat-error *ngIf="controlForm.get('totpCode')?.hasError('required')">
+            TOTP code is required
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" [disabled]="controlForm.invalid || loading">
+          Activate Authenticator
+        </button>
+      </form>
+    </div>
+    <!-- Si activé, propose les actions de gestion -->
+    <div *ngIf="authenticator.enabled" class="management-section">
+      <div class="confirmation-field">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Confirmation Code (if required)</mat-label>
+          <input matInput type="text" formControlName="totpCode" placeholder="Enter TOTP code">
+          <mat-error *ngIf="controlForm.get('totpCode')?.hasError('required')">
+            TOTP code is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="button-group">
+        <button mat-raised-button color="warn" type="button" (click)="disableAuthenticator()" [disabled]="loading">
+          Disable Authenticator
+        </button>
+        <button mat-raised-button color="accent" type="button" (click)="deleteAuthenticator()" [disabled]="loading">
+          Delete Authenticator
+        </button>
+      </div>
+    </div>
+    <div class="message" *ngIf="message">
+      <span class="success">{{ message }}</span>
+    </div>
+    <div class="message" *ngIf="error">
+      <span class="error">{{ error }}</span>
+    </div>
+  </div>
+  <div *ngIf="!loading && !authenticator">
+    <p>No authenticator found. Please set up your authenticator.</p>
+  </div>
+</div>
