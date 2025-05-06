@@ -3,3 +3,4 @@
 .env.prod
 
 /dev-deployments
+infra/.terraform/providers/**/terraform-provider-aws_*_x5.exe
