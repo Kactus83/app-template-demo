@@ -37,6 +37,7 @@ export class AppModule implements NestModule {
       .apply(SessionMiddleware, MorganMiddleware, VersionCheckMiddleware)
       .exclude(
         { path: 'api-docs', method: RequestMethod.ALL },
+        { path: 'docs', method: RequestMethod.ALL }
       )
       .forRoutes('*');
   }

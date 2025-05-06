@@ -12,6 +12,15 @@ export class NFTService {
   private readonly logger = new Logger(NFTService.name);
 
   constructor(private readonly web3Service: Web3Service, private readonly contractService: ContractService) {
+
+    // 🚧 Neutralisation en prod pour le demo simplifié
+    if (process.env.DISABLE_WEB3 === 'true') {
+      this.logger.warn('🔒 NFTService neutralisé (pas de blockchain en prod)');
+      // Pas d'initialisation du contrat, mais on définit un stub vide 
+      this.nftContract = {} as any;
+      return;
+    }
+
     const deploymentsPath = path.join(__dirname, '../../../../../../../deployments/web3');
     const nftDeploymentPath = path.join(deploymentsPath, 'NFTContract.json');
     const contractName = 'NFTContract';

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Orchestrateur de développement :
     1) (Optionnel) Nettoyage Docker
@@ -66,35 +66,46 @@ Write-Host ""
 Write-Host "[2/4] Prébuild : génération des types…" -ForegroundColor Cyan
 if (Confirm 'Prêt à lancer le service prebuild ?' $true) {
     $prebuildFile = 'docker-compose.prebuild.yml'
-    docker-compose -f $prebuildFile up --build --abort-on-container-exit
+    docker-compose --env-file .env.dev -f $prebuildFile up --build --abort-on-container-exit
     if ($LASTEXITCODE -ne 0) {
         Write-Error "❌ Échec du prébuild via $prebuildFile"
         exit 1
     }
     # Arrêt/cleanup du conteneur prebuild
-    docker-compose -f $prebuildFile down --remove-orphans
+    docker-compose --env-file .env.dev -f $prebuildFile down --remove-orphans
     Write-Host "✅ Prébuild terminé." -ForegroundColor Green
 } else {
     Write-Host "⚠️  Prébuild SKIPPÉ selon votre choix." -ForegroundColor Yellow
 }
 
-# 3) Build & montée de la stack de développement
+# 3) Build & montée (ou run seul) de la stack de développement
 Write-Host ""
 Write-Host "[3/4] Démarrage des services dev (docker-compose.dev.yml)..." -ForegroundColor Cyan
-if (Confirm 'Prêt à builder et démarrer les services dev ?' $true) {
+
+if (Confirm 'Voulez-vous builder et démarrer les services dev (build + up) ?' $true) {
     $devFile = 'docker-compose.dev.yml'
-    docker-compose -f $devFile up --build -d
+    docker-compose --env-file .env.dev -f $devFile up --build -d
     if ($LASTEXITCODE -ne 0) {
         Write-Error "❌ Échec du démarrage des services dev via $devFile"
         exit 1
     }
-    Write-Host "✅ Services dev démarrés : database, blockchain, mailhog, backend, frontend." -ForegroundColor Green
+    Write-Host "✅ Services dev BUILDÉS et démarrés : database, blockchain, mailhog, backend, frontend." -ForegroundColor Green
+
+} elseif (Confirm 'Voulez-vous uniquement démarrer les services existants (up sans build) ?' $true) {
+    $devFile = 'docker-compose.dev.yml'
+    docker-compose --env-file .env.dev -f $devFile up -d
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "❌ Échec du démarrage (up) des services dev via $devFile"
+        exit 1
+    }
+    Write-Host "✅ Services dev démarrés sans build : database, blockchain, mailhog, backend, frontend." -ForegroundColor Green
+
 } else {
     Write-Host "⚠️  Démarrage des services dev SKIPPÉ selon votre choix." -ForegroundColor Yellow
 }
 
 # 4) Affichage des logs
 Write-Host ""
-Write-Host "[4/4] Affichage des logs backend et frontend (Ctrl+C pour interrompre)" -ForegroundColor Cyan
+Write-Host "[4/4] Affichage des logs (Ctrl+C pour interrompre)" -ForegroundColor Cyan
 $devFile = 'docker-compose.dev.yml'
-docker-compose -f $devFile logs -f backend frontend
+docker-compose --env-file .env.dev -f $devFile logs -f

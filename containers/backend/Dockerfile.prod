@@ -33,8 +33,8 @@ RUN npm run test
 RUN npm run generate-docs
 
 # Copier le script d'entrée (entrypoint)
-COPY scripts/entrypoint.sh ./
-RUN chmod +x entrypoint.sh
+COPY scripts/prod-entrypoint.sh ./
+RUN chmod +x prod-entrypoint.sh
 
 # Construire l'application
 RUN npm run build
@@ -55,15 +55,21 @@ COPY --from=builder /app/deployments/docs ./docs
 
 # Copier l'application construite, le client Prisma et le script d'entrée
 COPY --from=builder /app/dist ./dist
-# Copier Prisma
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
-# Copier les modules Prisma 
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copier le script d'entrée
+COPY --from=builder /app/prod-entrypoint.sh ./prod-entrypoint.sh
+
+# Copier le schéma Prisma
+COPY prisma ./prisma
+
+# Générer le client pour toutes les cibles listées
+RUN npx prisma generate
+
+# Patch pour AWS runner
+RUN mkdir -p /app/deployments/backend
 
 # Exposer le port de l'application
 EXPOSE 3000
 
 # Définir le script d'entrée
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./prod-entrypoint.sh"]

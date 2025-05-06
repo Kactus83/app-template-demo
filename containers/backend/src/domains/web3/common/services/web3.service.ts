@@ -12,6 +12,15 @@ export class Web3Service {
   constructor() {
     const logger = new Logger(Web3Service.name);
 
+    
+    if (process.env.DISABLE_WEB3 === 'true') {
+      logger.warn('🔒 Web3Service neutralisé (pas de blockchain en prod)');
+      // Stub minimal
+      this.provider = {} as any;
+      this.signer   = {} as any;
+      return;
+    }
+
     // Définir le chemin du dossier deployments
     const deploymentsPath = path.join(__dirname, '../../../../../../deployments/web3');
 

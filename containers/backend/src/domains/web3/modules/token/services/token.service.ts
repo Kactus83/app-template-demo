@@ -12,6 +12,15 @@ export class TokenService {
   private readonly logger = new Logger(TokenService.name);
 
   constructor(private readonly web3Service: Web3Service, private readonly contractService: ContractService) {
+
+    // 🚧 Neutralisation en prod pour la =version demo
+    if (process.env.DISABLE_WEB3 === 'true') {
+      this.logger.warn('🔒 TokenService neutralisé (pas de blockchain en prod)');
+      // Pas d'initialisation du contrat, mais on définit un stub vide 
+      this.tokenContract = {} as any;
+      return;
+    }
+
     const deploymentsPath = path.join(__dirname, '../../../../../../../deployments/web3');
     const tokenDeploymentPath = path.join(deploymentsPath, 'TokenContract.json');
     const contractName = 'TokenContract';

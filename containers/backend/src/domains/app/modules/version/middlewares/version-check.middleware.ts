@@ -10,7 +10,7 @@ export class VersionCheckMiddleware implements NestMiddleware {
   }
 
   async use(req: Request, res: Response, next: NextFunction) {
-    if (req.originalUrl === '/health') { 
+    if (req.originalUrl === '/health' || req.originalUrl === '/docs') { 
       return next();
     }
 

@@ -3,12 +3,10 @@ import { Wallet } from "ethers";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import { VaultService } from "./vaultUtils";
 
 dotenv.config(); // Charger les variables d'environnement
 
 async function main() {
-
   // Charger la clé privée du déployeur
   const deployerPrivateKey = process.env.DEPLOYER_PRIVATE_KEY;
   if (!deployerPrivateKey) {
@@ -28,14 +26,17 @@ async function main() {
   await tokenSale.waitForDeployment();
   console.log(`TokenSale déployé à : ${tokenSale.target}`);
 
-  // 2. Déployer TokenContract avec le TokenSale comme initialHolder
+  // 2. Déployer TokenContract
   const TokenContractFactory = await ethers.getContractFactory("TokenContract");
-  const tokenInitialSupply = ethers.parseEther("1000000"); // 1 million de tokens avec 18 décimales
-  const tokenContract = await TokenContractFactory.deploy(tokenInitialSupply, tokenSale.target);
+  const tokenInitialSupply = ethers.parseEther("1000000"); // 1M tokens
+  const tokenContract = await TokenContractFactory.deploy(
+    tokenInitialSupply,
+    tokenSale.target
+  );
   await tokenContract.waitForDeployment();
   console.log(`TokenContract déployé à : ${tokenContract.target}`);
 
-  // 3. Définir l'adresse du TokenContract dans TokenSale
+  // 3. Lier TokenSale → TokenContract
   const setTokenTx = await tokenSale.setToken(tokenContract.target);
   await setTokenTx.wait();
   console.log(`Adresse de TokenContract définie dans TokenSale`);
@@ -61,51 +62,43 @@ async function main() {
     fs.mkdirSync(deploymentsDir, { recursive: true });
   }
 
-  const saveDeployment = async (name: string, contract: any) => {
-    const artifactPath = path.join(__dirname, `../artifacts/contracts/${name}.sol/${name}.json`);
+  async function saveDeployment(name: string, contract: any) {
+    const artifactPath = path.join(
+      __dirname,
+      `../artifacts/contracts/${name}.sol/${name}.json`
+    );
     if (!fs.existsSync(artifactPath)) {
       throw new Error(`L'artefact pour ${name} n'existe pas.`);
     }
     const artifact = JSON.parse(fs.readFileSync(artifactPath, "utf8"));
-
     fs.writeFileSync(
       path.join(deploymentsDir, `${name}.json`),
-      JSON.stringify({
-        address: contract.target,
-        abi: artifact.abi,
-      }, null, 2)
+      JSON.stringify(
+        { address: contract.target, abi: artifact.abi },
+        null,
+        2
+      )
     );
-  };
+  }
 
-  // Sauvegarder les informations des contrats
   await saveDeployment("TokenSale", tokenSale);
   await saveDeployment("TokenContract", tokenContract);
   await saveDeployment("NFTContract", nftContract);
   await saveDeployment("MultiVault", multiVault);
 
-  // Sauvegarder les informations du backend
+  // Sauvegarde des informations du backend (adresse + clé privée)
   fs.writeFileSync(
     path.join(deploymentsDir, "Backend.json"),
-    JSON.stringify({
-      address: deployer.address,
-      privateKey: deployerPrivateKey,
-    }, null, 2)
+    JSON.stringify(
+      { address: deployer.address, privateKey: deployerPrivateKey },
+      null,
+      2
+    )
   );
 
-  console.log("Informations sur les contrats et backend sauvegardées dans des fichiers séparés.");
-
-
-  // Stocker la clé privée du déployeur dans Vault
-  const vaultService = new VaultService();
-  await vaultService.initializeVault("blockchain-role"); // Authentification avec le rôle AppRole
-
-  const secretPath = "secrets/data/blockchain"; // Chemin dans Vault pour stocker les secrets
-
-  // Stocker la clé privée et l'adresse du déployeur dans Vault
-  await vaultService.storeSecret(secretPath, {
-    deployerAddress: deployer.address,
-    deployerPrivateKey: deployerPrivateKey,
-  });
+  console.log(
+    "Informations sur les contrats et backend sauvegardées dans des fichiers séparés."
+  );
 }
 
 main()

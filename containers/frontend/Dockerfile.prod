@@ -25,13 +25,13 @@ COPY --from=build /app/dist/fuse/browser /usr/share/nginx/html
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Copier le script d'entrypoint dans l'image finale
-COPY scripts/entrypoint.sh /entrypoint.sh
+COPY scripts/prod-entrypoint.sh /prod-entrypoint.sh
 COPY scripts/check_health.sh /check_health.sh
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /prod-entrypoint.sh
 
 # Exposer le port 4200
 EXPOSE 4200
 
 # Définir l'entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/prod-entrypoint.sh"]

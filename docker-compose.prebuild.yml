@@ -7,7 +7,7 @@ services:
     environment:
       DEPLOYER_PRIVATE_KEY: ${DEPLOYER_PRIVATE_KEY}
     env_file:
-      - .env
+      - .env.dev
     volumes:
       - ./containers/containers/blockchain/types:/app/types # Pour la persistance des types dans le conteneur entre le prebuild et le build reel.
       - ./containers/frontend/src/@custom/web3/dynamic-types:/app/types 

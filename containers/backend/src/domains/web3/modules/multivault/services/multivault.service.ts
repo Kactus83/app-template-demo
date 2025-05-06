@@ -13,6 +13,17 @@ export class MultiVaultService {
 
   constructor(private readonly web3Service: Web3Service, private readonly contractService: ContractService) {
     const logger = new Logger(MultiVaultService.name);
+
+    
+
+    // 🚧 Neutralisation en prod pour le demo simplifiée
+    if (process.env.DISABLE_WEB3 === 'true') {
+      logger.warn('🔒 MultiVaultService neutralisé (pas de blockchain en prod)');
+      // Pas d'initialisation du contrat, mais on définit un stub vide 
+      this.multiVaultContract = {} as any;
+      return;
+    }
+
     const deploymentsPath = path.join(__dirname, '../../../../../../../deployments/web3');
     const multiVaultDeploymentPath = path.join(deploymentsPath, 'MultiVault.json');
     const contractName = 'MultiVault';

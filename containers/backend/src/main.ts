@@ -36,7 +36,14 @@ async function bootstrap() {
 
     // Initialiser VaultService pour charger les secrets dans l'environnement
     const vaultService = vaultAppContext.get(VaultService);
-    await vaultService.initializeVault();
+    try {
+      await vaultService.initializeVault();
+    } catch (err) {
+      Logger.warn(
+        `⚠️  VaultService non disponible (${err.message}). On continue sans Vault.`,
+        'VaultInit'
+      );
+    }
     
     // Fermer le contexte de VaultModule après l'initialisation
     await vaultAppContext.close();
@@ -92,13 +99,13 @@ async function bootstrap() {
 
     // Récupérer les configurations depuis l'environnement
     const port = process.env.PORT || 3000;
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+    // const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
 
     // Activer CORS
     app.enableCors({
-      origin: [frontendUrl, 'http://frontend:4200'],
-      credentials: true,
-    });
+      origin: true,          // renvoie l’origine reçue dans le header `Origin`
+      credentials: true,     // autorise les cookies
+    });    
 
     logger.log('CORS enabled');
 
