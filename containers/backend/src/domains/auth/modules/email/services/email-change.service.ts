@@ -52,7 +52,9 @@ export class EmailChangeService {
 
     this.logger.log(`Email change token created for userId: ${userId}, newEmail: ${newEmail}`);
 
-    await this.emailService.sendEmailChangeConfirmation(user.name, newEmail, token, 'PRIMARY');
+    // Envoyer l'email de confirmation de changement d'email
+    const userName = user.username ?? user.firstName ?? user.email.split('@')[0];
+    await this.emailService.sendEmailChangeConfirmation(userName, newEmail, token, 'PRIMARY');
 
     this.logger.log(`Email change confirmation sent to: ${newEmail}`);
   }
@@ -93,7 +95,9 @@ export class EmailChangeService {
 
     this.logger.log(`Email change token created for userId: ${userId}, newEmail: ${newEmail}`);
 
-    await this.emailService.sendEmailChangeConfirmation(user.name, newEmail, token, 'SECONDARY');
+    // Envoyer l'email de confirmation de changement d'email secondaire
+    const userName = user.username ?? user.firstName ?? user.email.split('@')[0];
+    await this.emailService.sendEmailChangeConfirmation(userName, newEmail, token, 'SECONDARY');
 
     this.logger.log(`Email change confirmation sent to: ${newEmail}`);
   }

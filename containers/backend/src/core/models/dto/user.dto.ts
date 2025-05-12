@@ -42,6 +42,15 @@ export class UserDto {
   @Expose()
   email!: string | null;
 
+  @ApiPropertyOptional({
+    description: "Username of the user",
+    example: "user123",
+  })
+  @IsOptional()
+  @IsString()
+  @Expose()
+  username!: string | null;
+
   @ApiProperty({ description: "Indicates whether the primary email is verified", example: true })
   @IsBoolean()
   @Expose()
@@ -62,11 +71,17 @@ export class UserDto {
   @Expose()
   isSecondaryEmailVerified!: boolean;
 
-  @ApiPropertyOptional({ description: "Name of the user", example: "John Doe" })
+  @ApiPropertyOptional({ description: "First Name of the user", example: "John" })
   @IsOptional()
   @IsString()
   @Expose()
-  name!: string | null;
+  firstName!: string | null;
+
+  @ApiPropertyOptional({ description: "Last Name of the user", example: "Doe" })
+  @IsOptional()
+  @IsString()
+  @Expose()
+  lastName!: string | null;
 
   @ApiPropertyOptional({
     description: "URL of the user's avatar",
@@ -92,6 +107,7 @@ export class UserDto {
   @IsArray()
   @Expose()
   roles!: UserRole[];
+
 
   @ApiProperty({
     description: "Creation date of the user",

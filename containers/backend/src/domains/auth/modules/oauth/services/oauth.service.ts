@@ -245,14 +245,13 @@ export class OAuthService {
     // Créer un nouvel utilisateur
     const newUserData = {
       email,
+      username: null,
       isEmailVerified: true,
       secondaryEmail: null,
       isSecondaryEmailVerified: false,
       password: null,
-      name:
-        profile.displayName ||
-        `${profile.name?.givenName || ''} ${profile.name?.familyName || ''}`.trim() ||
-        `User-${Math.floor(Math.random() * 1000000)}`, // Nom par défaut si aucun nom n'est fourni
+      firstName: profile.name?.givenName || null,
+      lastName: profile.name?.familyName || null,
       avatar: avatar,
       status: 'offline',
       roles: [UserRole.USER],
@@ -285,9 +284,11 @@ export class OAuthService {
     });
 
     // Envoyer un message de bienvenue via le service de communication
+
+    const username = user.username ?? user.firstName ?? user.email.split('@')[0];
     await this.communicationService.createMessage(user.id, {
       title: 'Welcome OAuth User!',
-      description: `Hello ${user.name}, welcome to our platform! You have registered using ${provider}.`,
+      description: `Hello ${username}, welcome to our platform! You have registered using ${provider}.`,
       icon: 'welcome-icon',
       image: null,
       link: null,

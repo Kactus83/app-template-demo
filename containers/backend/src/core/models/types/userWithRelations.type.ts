@@ -18,5 +18,8 @@ export type UserWithRelations = Prisma.UserGetPayload<{
     messages: true;
     oauthMFATokens: true;
     userAuthMethods: true;
+    connectionHistories: true;
+    passwordHistories: true;
+    authMethodsHistories: true;
   };
 }>;

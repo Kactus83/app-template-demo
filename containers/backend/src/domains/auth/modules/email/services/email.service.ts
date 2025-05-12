@@ -75,7 +75,9 @@ export class EmailService {
       expiresAt: secondaryExpiresAt,
     });
 
-    await this.emailService.sendEmailVerification(existingUser.name, secondaryEmail, secondaryToken, 'SECONDARY');
+    // Envoyer l'email de vérification
+    const userName = updatedUser.username ?? updatedUser.firstName ?? updatedUser.email.split('@')[0];
+    await this.emailService.sendEmailVerification(userName, secondaryEmail, secondaryToken, 'SECONDARY');
 
     this.logger.log(`Secondary email added for user: ${updatedUser.email}`);
 
@@ -112,7 +114,9 @@ export class EmailService {
       expiresAt: expiresAt,
     });
 
-    await this.emailService.sendSecondaryEmailDeletionConfirmation(user.name, user.secondaryEmail, token);
+    // Envoyer l'email de confirmation
+    const userName = user.username ?? user.firstName ?? user.email.split('@')[0];
+    await this.emailService.sendSecondaryEmailDeletionConfirmation(userName, user.secondaryEmail, token);
 
     this.logger.log(`Secondary email deletion confirmation sent to ${user.secondaryEmail}`);
 

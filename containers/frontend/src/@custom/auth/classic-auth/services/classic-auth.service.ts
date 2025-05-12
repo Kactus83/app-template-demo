@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../../environment';
-import { AddClassicAuthDto } from '../models/dto/auth.dto';
+import { AddEmailClassicAuthDto, AddUsernameClassicAuthDto } from '../models/dto/auth.dto';
 import { UserDto } from '@custom/common/models/dto/user.dto';
 
 /**
@@ -21,7 +21,7 @@ export class ClassicAuthService {
    * @param addClassicAuthDto Objet contenant l'email et le mot de passe.
    * @returns Un Observable émettant un UserDto épuré.
    */
-  addClassicAuth(addClassicAuthDto: AddClassicAuthDto): Observable<UserDto> {
+  addClassicAuth(addClassicAuthDto: AddEmailClassicAuthDto | AddUsernameClassicAuthDto): Observable<UserDto> {
     return this.http.post<UserDto>(`${this.baseUrl}/auth/add-classic-auth`, addClassicAuthDto);
   }
 }

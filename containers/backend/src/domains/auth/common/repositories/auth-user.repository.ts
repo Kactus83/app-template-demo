@@ -22,6 +22,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -41,6 +44,10 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
+
       },
     });
   }
@@ -65,6 +72,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -84,6 +94,31 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
+      },
+    });
+  }
+
+  async findByUsername(username: string): Promise<UserWithRelations | null> {
+    return this.prisma.user.findUnique({
+      where: { username },
+      include: {
+        web3Accounts: true,
+        oauthAccounts: true,
+        authenticator: true,
+        phones: true,
+        userAuthMethods: true,
+        MFATokens: true,
+        emailMFAToken: true,
+        MFANonces: true,
+        notifications: true,
+        messages: true,
+        oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -103,6 +138,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -139,6 +177,9 @@ export class AuthUserRepository {
           notifications: true,
           messages: true,
           oauthMFATokens: true,
+          connectionHistories: true,
+          passwordHistories: true,
+          authMethodsHistories: true,
         },
       });
     } catch (error) {
@@ -163,6 +204,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -183,6 +227,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -203,6 +250,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -223,6 +273,9 @@ export class AuthUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }
@@ -258,6 +311,9 @@ export class AuthUserRepository {
           notifications: true,
           messages: true,
           oauthMFATokens: true,
+          connectionHistories: true,
+          passwordHistories: true,
+          authMethodsHistories: true,
         },
       });
     } catch (error) {

@@ -21,11 +21,23 @@ export class UserSearchDto {
   @Expose()
   id: number;
 
-  @ApiPropertyOptional({ description: "Nom de l'utilisateur", example: "John Doe" })
+  @ApiPropertyOptional({ description: "Prenom de l'utilisateur", example: "John" })
   @IsOptional()
   @IsString()
   @Expose()
-  name: string | null;
+  firstName: string | null;
+
+  @ApiPropertyOptional({ description: "Nom de l'utilisateur", example: "Doe" })
+  @IsOptional()
+  @IsString()
+  @Expose()
+  lastName: string | null;
+
+  @ApiPropertyOptional({ description: "Nom d'utilisateur (username)", example: "johndoe" })
+  @IsOptional()
+  @IsString()
+  @Expose()
+  username: string | null;
 
   @ApiPropertyOptional({ description: "Email de l'utilisateur", format: 'email', example: "john.doe@example.com" })
   @IsOptional()

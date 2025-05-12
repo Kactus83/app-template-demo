@@ -51,21 +51,16 @@
 
             <!-- Sign in form -->
             <form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
-                <!-- Email field -->
+                <!-- Identifier field -->
                 <mat-form-field class="w-full">
-                    <mat-label>Email address</mat-label>
-                    <input id="email" matInput [formControlName]="'email'" />
-                    @if (signInForm.get('email').hasError('required')) {
-                        <mat-error> Email address is required </mat-error>
-                    }
-                    @if (signInForm.get('email').hasError('email')) {
-                        <mat-error>
-                            Please enter a valid email address
-                        </mat-error>
-                    }
+                    <mat-label>Email or Username</mat-label>
+                    <input id="identifier" matInput [formControlName]="'identifier'" />
+                    <mat-error *ngIf="signInForm.get('identifier').hasError('required')">
+                        Email or username is required
+                    </mat-error>
                 </mat-form-field>
-
-                <!-- Password field -->
+            
+                <!-- Password field (inchangé) -->
                 <mat-form-field class="w-full">
                     <mat-label>Password</mat-label>
                     <input
@@ -85,20 +80,18 @@
                         "
                         matSuffix
                     >
-                        @if (passwordField.type === 'password') {
-                            <mat-icon
-                                class="icon-size-5"
-                                [svgIcon]="'heroicons_solid:eye'"
-                            ></mat-icon>
-                        }
-                        @if (passwordField.type === 'text') {
-                            <mat-icon
-                                class="icon-size-5"
-                                [svgIcon]="'heroicons_solid:eye-slash'"
-                            ></mat-icon>
-                        }
+                        <mat-icon
+                            *ngIf="passwordField.type === 'password'"
+                            class="icon-size-5"
+                            [svgIcon]="'heroicons_solid:eye'"
+                        ></mat-icon>
+                        <mat-icon
+                            *ngIf="passwordField.type === 'text'"
+                            class="icon-size-5"
+                            [svgIcon]="'heroicons_solid:eye-slash'"
+                        ></mat-icon>
                     </button>
-                    <mat-error> Password is required </mat-error>
+                    <mat-error>Password is required</mat-error>
                 </mat-form-field>
 
                 <!-- Actions -->

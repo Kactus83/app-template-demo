@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink } from '@angular/router';
+import { RegisterDto } from '@custom/auth/classic-auth/models/dto/auth.dto';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -65,10 +66,12 @@ export class AuthSignUpComponent implements OnInit {
     ngOnInit(): void {
         // Create the form
         this.signUpForm = this._formBuilder.group({
-            name: ['', Validators.required],
+            username: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             password: ['', Validators.required],
-            company: [''],
+            firstName: ['', Validators.required],
+            lastName: ['', Validators.required],
+            secondaryEmail: ['', Validators.email],
             agreements: ['', Validators.requiredTrue],
         });
     }
@@ -93,7 +96,8 @@ export class AuthSignUpComponent implements OnInit {
         this.showAlert = false;
 
         // Sign up
-        this._authService.signUp(this.signUpForm.value).subscribe(
+        const user: RegisterDto = this.signUpForm.value;
+        this._authService.signUp(user).subscribe(
             (response) => {
                 // Navigate to the confirmation required page
                 this._router.navigateByUrl('/confirmation-required');

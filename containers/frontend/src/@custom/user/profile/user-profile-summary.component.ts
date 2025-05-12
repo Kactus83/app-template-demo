@@ -5,8 +5,8 @@
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserDto } from '@custom/common/models/dto/user.dto';
 import { MatIconModule } from '@angular/material/icon';
+import { User } from '../../../app/core/user/user.types';
 
 @Component({
     selector     : 'user-profile-summary',
@@ -21,7 +21,7 @@ export class UserProfileSummaryComponent implements OnInit
     /**
      * Utilisateur dont le résumé doit être affiché.
      */
-    @Input() user!: UserDto;
+    @Input() user!: User;
 
     /**
      * Constructeur du composant.

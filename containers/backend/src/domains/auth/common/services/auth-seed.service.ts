@@ -13,7 +13,7 @@ export class AuthSeedService implements OnApplicationBootstrap {
   constructor(private readonly authUserRepo: AuthUserRepository) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    const email = 'admin';
+    const email = 'admin@admin.fr';
     const password = 'prodAdminPass';
     const existing = await this.authUserRepo.findByPrimaryOrSecondaryEmail(email);
 
@@ -29,7 +29,9 @@ export class AuthSeedService implements OnApplicationBootstrap {
       isEmailVerified: true,
       secondaryEmail: null,
       isSecondaryEmailVerified: false,
-      name: 'Administrator',
+      username: 'Admin',
+      firstName: 'App',
+      lastName: 'Admin',
       avatar: null,
       status: 'offline',
       roles: ['ADMIN'],

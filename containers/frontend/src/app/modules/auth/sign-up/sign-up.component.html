@@ -40,30 +40,46 @@
 
             <!-- Sign Up form -->
             <form class="mt-8" [formGroup]="signUpForm" #signUpNgForm="ngForm">
-                <!-- Name field -->
+                <!-- Username -->
                 <mat-form-field class="w-full">
-                    <mat-label>Full name</mat-label>
-                    <input id="name" matInput [formControlName]="'name'" />
-                    @if (signUpForm.get('name').hasError('required')) {
-                        <mat-error> Full name is required </mat-error>
-                    }
+                    <mat-label>Username</mat-label>
+                    <input id="username" matInput [formControlName]="'username'" />
+                    <mat-error *ngIf="signUpForm.get('username').hasError('required')">
+                        Username is required
+                    </mat-error>
                 </mat-form-field>
-
-                <!-- Email field -->
+            
+                <!-- First Name -->
+                <mat-form-field class="w-full">
+                    <mat-label>First Name</mat-label>
+                    <input id="firstName" matInput [formControlName]="'firstName'" />
+                    <mat-error *ngIf="signUpForm.get('firstName').hasError('required')">
+                        First name is required
+                    </mat-error>
+                </mat-form-field>
+            
+                <!-- Last Name -->
+                <mat-form-field class="w-full">
+                    <mat-label>Last Name</mat-label>
+                    <input id="lastName" matInput [formControlName]="'lastName'" />
+                    <mat-error *ngIf="signUpForm.get('lastName').hasError('required')">
+                        Last name is required
+                    </mat-error>
+                </mat-form-field>
+            
+                <!-- Email -->
                 <mat-form-field class="w-full">
                     <mat-label>Email address</mat-label>
                     <input id="email" matInput [formControlName]="'email'" />
-                    @if (signUpForm.get('email').hasError('required')) {
-                        <mat-error> Email address is required </mat-error>
-                    }
-                    @if (signUpForm.get('email').hasError('email')) {
-                        <mat-error>
-                            Please enter a valid email address
-                        </mat-error>
-                    }
+                    <mat-error *ngIf="signUpForm.get('email').hasError('required')">
+                        Email address is required
+                    </mat-error>
+                    <mat-error *ngIf="signUpForm.get('email').hasError('email')">
+                        Please enter a valid email address
+                    </mat-error>
                 </mat-form-field>
-
-                <!-- Password field -->
+            
+                <!-- Password -->
                 <mat-form-field class="w-full">
                     <mat-label>Password</mat-label>
                     <input
@@ -83,33 +99,34 @@
                         "
                         matSuffix
                     >
-                        @if (passwordField.type === 'password') {
-                            <mat-icon
-                                class="icon-size-5"
-                                [svgIcon]="'heroicons_solid:eye'"
-                            ></mat-icon>
-                        }
-                        @if (passwordField.type === 'text') {
-                            <mat-icon
-                                class="icon-size-5"
-                                [svgIcon]="'heroicons_solid:eye-slash'"
-                            ></mat-icon>
-                        }
+                        <mat-icon
+                            *ngIf="passwordField.type === 'password'"
+                            class="icon-size-5"
+                            [svgIcon]="'heroicons_solid:eye'"
+                        ></mat-icon>
+                        <mat-icon
+                            *ngIf="passwordField.type === 'text'"
+                            class="icon-size-5"
+                            [svgIcon]="'heroicons_solid:eye-slash'"
+                        ></mat-icon>
                     </button>
-                    <mat-error> Password is required </mat-error>
+                    <mat-error>Password is required</mat-error>
                 </mat-form-field>
-
-                <!-- Company field -->
+            
+                <!-- Secondary Email -->
                 <mat-form-field class="w-full">
-                    <mat-label>Company</mat-label>
+                    <mat-label>Secondary Email</mat-label>
                     <input
-                        id="company-confirm"
+                        id="secondaryEmail"
                         matInput
-                        [formControlName]="'company'"
+                        [formControlName]="'secondaryEmail'"
                     />
+                    <mat-error *ngIf="signUpForm.get('secondaryEmail').hasError('email')">
+                        Please enter a valid secondary email address
+                    </mat-error>
                 </mat-form-field>
-
-                <!-- ToS and PP -->
+            
+                <!-- Agreements -->
                 <div class="mt-1.5 inline-flex w-full items-end">
                     <mat-checkbox
                         class="-ml-2"
@@ -117,20 +134,16 @@
                         [formControlName]="'agreements'"
                     >
                         <span>I agree with</span>
-                        <a
-                            class="ml-1 text-primary-500 hover:underline"
-                            [routerLink]="['./']"
-                            >Terms
+                        <a class="ml-1 text-primary-500 hover:underline" [routerLink]="['./']">
+                            Terms
                         </a>
                         <span>and</span>
-                        <a
-                            class="ml-1 text-primary-500 hover:underline"
-                            [routerLink]="['./']"
-                            >Privacy Policy
+                        <a class="ml-1 text-primary-500 hover:underline" [routerLink]="['./']">
+                            Privacy Policy
                         </a>
                     </mat-checkbox>
                 </div>
-
+            
                 <!-- Submit button -->
                 <button
                     class="fuse-mat-button-large mt-6 w-full"
@@ -139,17 +152,14 @@
                     [disabled]="signUpForm.disabled"
                     (click)="signUp()"
                 >
-                    @if (!signUpForm.disabled) {
-                        <span> Create your free account </span>
-                    }
-                    @if (signUpForm.disabled) {
-                        <mat-progress-spinner
-                            [diameter]="24"
-                            [mode]="'indeterminate'"
-                        ></mat-progress-spinner>
-                    }
+                    <span *ngIf="!signUpForm.disabled">Create your free account</span>
+                    <mat-progress-spinner
+                        *ngIf="signUpForm.disabled"
+                        [diameter]="24"
+                        [mode]="'indeterminate'"
+                    ></mat-progress-spinner>
                 </button>
-            </form>
+            </form>            
         </div>
     </div>
     <div

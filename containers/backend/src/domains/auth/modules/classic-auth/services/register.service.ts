@@ -18,60 +18,112 @@ export class RegisterService {
     private readonly notificationService: CommunicationService,
   ) {}
 
+  /**
+   * Enregistre un nouvel utilisateur et initie la vérification email
+   * ainsi que la notification de bienvenue.
+   *
+   * @param registerData Données d'inscription (email, mot de passe, pseudo, prénom, nom, email secondaire)
+   * @returns L'utilisateur complet avec toutes ses relations.
+   * @throws Error si email, secondaryEmail ou pseudo déjà utilisés.
+   */
   async register(registerData: RegisterDto): Promise<UserWithRelations> {
-    const existingUser = await this.authUserRepository.findByPrimaryOrSecondaryEmail(registerData.email);
+    const {
+      email,
+      password,
+      secondaryEmail,
+      username,
+      firstName,
+      lastName,
+    } = registerData;
+
+    // Verifier que l'email ou le pseudo et le mot de passe sont fournis
+    if((!email && !username) || !password) {
+      throw new Error('Email or username AND password is required');
+    }
+
+    // 1️⃣ Vérifier unicité de l'email principal
+    const existingUser = await this.authUserRepository.findByPrimaryOrSecondaryEmail(email);
     if (existingUser) {
       throw new Error('Email already in use');
     }
 
-    if (registerData.secondaryEmail) {
-      const existingSecondaryEmailUser = await this.authUserRepository.findByPrimaryOrSecondaryEmail(registerData.secondaryEmail);
-      if (existingSecondaryEmailUser) {
+    // 2️⃣ Vérifier unicité de l'email secondaire
+    if (secondaryEmail) {
+      const existingSecondary = await this.authUserRepository.findByPrimaryOrSecondaryEmail(secondaryEmail);
+      if (existingSecondary) {
         throw new Error('Secondary email already in use');
       }
     }
 
-    const hashedPassword = await bcrypt.hash(registerData.password, 10);
+    // 3️⃣ Vérifier unicité du pseudo
+    if (username) {
+      const existingUsername = await this.authUserRepository.findByUsername(username);
+      if (existingUsername) {
+        throw new Error('Username already in use');
+      }
+    }
 
+    // 4️⃣ Hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 5️⃣ Créer l'utilisateur
     let user = await this.authUserRepository.create({
-      email: registerData.email,
+      email,
+      username: username ?? null,
+      firstName: firstName ?? null,
+      lastName: lastName ?? null,
       isEmailVerified: false,
-      secondaryEmail: registerData.secondaryEmail || null,
+      secondaryEmail: secondaryEmail ?? null,
       isSecondaryEmailVerified: false,
       password: hashedPassword,
-      name: registerData.name ?? null,
       avatar: null,
       status: 'offline',
       roles: ['USER'],
       authMethods: [AuthenticationMethod.CLASSIC],
     });
 
-    // Ajout de la première méthode d'authentification dans userAuthMethods
+    // 6️⃣ Ajouter la méthode CLASSIC dans userAuthMethods
     await this.authUserRepository.addAuthMethod(user.id, {
       method: AuthenticationMethod.CLASSIC,
-      methodId: 1, // Peut être ajusté selon l'ID principal si nécessaire
+      methodId: null,
       order: 1,
     });
 
-    // Set default name if not provided
-    if (!user.name) {
-      const defaultName = `User-${user.id}`;
-      user = await this.authUserRepository.update(user.id, { name: defaultName });
+    // 7️⃣ Fallback prénom si ni prénom ni nom fournis
+    if (!user.firstName && !user.lastName) {
+      const defaultFirstName = `User-${user.id}`;
+      user = await this.authUserRepository.update(user.id, {
+        firstName: defaultFirstName,
+      });
     }
 
-    // Generate and send email verification tokens
-    const primaryToken = await this.emailVerificationTokenRepository.createToken(user.id, 'PRIMARY');
-    await this.emailService.sendEmailVerification(user.name, user.email, primaryToken.token, 'PRIMARY');
+    // Préparer le nom complet pour les emails/notifications
+    const displayName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.username!;
 
+    // 8️⃣ Générer et envoyer le token de vérification principal
+    const primaryToken = await this.emailVerificationTokenRepository.createToken(user.id, 'PRIMARY');
+    await this.emailService.sendEmailVerification(
+      displayName,
+      user.email!,
+      primaryToken.token,
+      'PRIMARY',
+    );
+
+    // 9️⃣ Token de vérification secondaire si nécessaire
     if (user.secondaryEmail) {
       const secondaryToken = await this.emailVerificationTokenRepository.createToken(user.id, 'SECONDARY');
-      await this.emailService.sendEmailVerification(user.name, user.secondaryEmail, secondaryToken.token, 'SECONDARY');
+      await this.emailService.sendEmailVerification(
+        displayName,
+        user.secondaryEmail,
+        secondaryToken.token,
+        'SECONDARY',
+      );
     }
 
-    // Send welcome notification
+    // 🔟 Notification de bienvenue
     await this.notificationService.createNotification(user.id, {
       title: 'Welcome!',
-      description: `Hello ${user.name}, welcome to our platform!`,
+      description: `Hello ${displayName}, welcome to our platform!`,
       time: new Date(),
       read: false,
     });

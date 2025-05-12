@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, defaultIfEmpty, Observable, of, switchMap, throwError } from 'rxjs';
 import { AuthUtils } from 'app/core/auth/auth.utils';
-import { LoginDto, RegisterDto, ResetPasswordDto } from '@custom/auth/classic-auth/models/dto/auth.dto';
+import { EmailLoginDto, UsernameLoginDto, RegisterDto, ResetPasswordDto } from '@custom/auth/classic-auth/models/dto/auth.dto';
 import { AuthCoreService } from '@custom/auth/common/services/core-auth.service';
 
 /**
@@ -45,7 +45,7 @@ export class AuthService {
    * @param credentials - LoginDto contenant email et password
    * @returns Un Observable de la réponse serveur
    */
-  signIn(credentials: LoginDto): Observable<any> {
+  signIn(credentials: EmailLoginDto | UsernameLoginDto): Observable<any> {
     if (this._authCore.isAuthenticated()) {
       return throwError(() => 'User is already logged in.');
     }

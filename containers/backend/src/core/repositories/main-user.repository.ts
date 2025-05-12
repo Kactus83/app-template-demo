@@ -34,6 +34,9 @@ export class MainUserRepository {
         notifications: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }

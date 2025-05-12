@@ -75,7 +75,9 @@ export class Web3AuthService {
         secondaryEmail: null,
         isSecondaryEmailVerified: false,
         password: null,
-        name: null,
+        firstName: null,
+        lastName: null,
+        username: null,
         avatar: null,
         status: 'offline',
         roles: ['USER'],
@@ -83,9 +85,9 @@ export class Web3AuthService {
       }); 
 
       // Si l'utilisateur n'a pas de nom, définir "User-[id]" comme nom par défaut
-      const defaultName = `User-${user.id}`;
-      await this.userRepository.update(user.id, { name: defaultName });
-      user.name = defaultName; 
+      await this.userRepository.update(user.id, { firstName: 'User', lastName: user.id.toString() });
+      user.firstName = 'User';
+      user.lastName = user.id.toString(); 
 
       // Créer un Web3Account lié à cet utilisateur
       web3Account = await this.web3AccountRepository.create(user.id, wallet); 

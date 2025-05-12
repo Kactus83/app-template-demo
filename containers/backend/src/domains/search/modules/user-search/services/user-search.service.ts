@@ -18,7 +18,9 @@ export class UserSearchService {
     return users.map(user => {
       const dto = new UserSearchDto();
       dto.id = user.id;
-      dto.name = user.name;
+      dto.firstName = user.firstName;
+      dto.lastName = user.lastName;
+      dto.username = user.username;
       dto.email = user.email;
       dto.avatar = user.avatar;
       return dto;

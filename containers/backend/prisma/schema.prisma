@@ -20,6 +20,12 @@ enum NavigationType {
   ADMIN
 }
 
+enum AuthMethodsHistoryType {
+  EMAIL
+  PHONE
+  WALLET
+}
+
 // Enumération pour les Types d'Authentification
 enum AuthenticationMethod {
   CLASSIC
@@ -42,6 +48,25 @@ enum UserRole {
   ADMIN
 }
 
+/// Origine d'une action
+enum ChangeInitiator {
+  SELF
+  ADMIN
+}
+
+/// Motif du changement de mot de passe
+enum PasswordChangeReason {
+  RESET_TOKEN
+  SELF_SERVICE
+  ADMIN_RESET
+}
+
+/// Action sur une méthode d’authentification
+enum AuthMethodAction {
+  ADDED
+  REMOVED
+}
+
 model Navigation {
   id          Int            @id @default(autoincrement())
   type        NavigationType @unique
@@ -56,11 +81,13 @@ model Navigation {
 model User {
   id                        Int                     @id @default(autoincrement())
   email                     String?                 @unique
+  username                  String?                 @unique
   isEmailVerified           Boolean                 @default(false)
   secondaryEmail            String?                 @unique
   isSecondaryEmailVerified  Boolean                 @default(false)
   password                  String?
-  name                      String?
+  firstName                 String?
+  lastName                  String?
   avatar                    String?
   status                    String?
   roles                     UserRole[]
@@ -84,7 +111,65 @@ model User {
   messages                  Message[]
   oauthMFATokens            OAuthMFAToken[]  
   userAuthMethods           UserAuthMethod[]
+  connectionHistories       ConnectionHistory[]
+  passwordHistories         PasswordHistory[]
+  authMethodsHistories      AuthMethodsHistory[]
 }
+
+
+
+/// Historique des connexions d’un utilisateur
+model ConnectionHistory {
+  id           Int                     @id @default(autoincrement())
+  user         User                    @relation(fields: [userId], references: [id])
+  userId       Int
+
+  ipAddress    String
+  userAgent    String?
+  success      Boolean
+  method       AuthenticationMethod
+  createdAt    DateTime                @default(now())
+  lastActivity DateTime
+  location     String?
+  meta         Json?
+
+  @@index([userId])
+}
+
+
+/// Historique des anciens mots de passe
+model PasswordHistory {
+  id          Int                     @id @default(autoincrement())
+  user        User                    @relation(fields: [userId], references: [id])
+  userId      Int
+
+  password    String
+  changedBy   ChangeInitiator
+  reason      PasswordChangeReason
+  timestamp   DateTime                @default(now())
+  ipAddress   String?
+  meta        Json?
+
+  @@index([userId])
+}
+
+
+/// Historique des contacts (email / téléphone / wallet)
+model AuthMethodsHistory {
+  id           Int                    @id @default(autoincrement())
+  user         User                   @relation(fields: [userId], references: [id])
+  userId       Int
+
+  type         AuthMethodsHistoryType
+  value        String
+  action       AuthMethodAction
+  performedBy  ChangeInitiator
+  timestamp    DateTime               @default(now())
+  meta         Json?
+
+  @@index([userId])
+}
+
 
 model UserAuthMethod {
   id          Int                   @id @default(autoincrement())

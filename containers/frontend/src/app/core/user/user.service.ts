@@ -3,55 +3,103 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
 import { environment } from '../../../../environment';
 import { UserDto } from '@custom/common/models/dto/user.dto';
+import { User } from './user.types';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    private _httpClient = inject(HttpClient);
-    private _user: ReplaySubject<UserDto> = new ReplaySubject<UserDto>(1);
+  private _httpClient = inject(HttpClient);
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Accessors
-    // -----------------------------------------------------------------------------------------------------
+  // On émet désormais des User (avec le champ name calculé)
+  private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
 
-    /**
-     * Setter & getter for user
-     *
-     * @param value
-     */
-    set user(value: UserDto) {
-        // Store the value
-        this._user.next(value);
+  // -----------------------------------------------------------------------------------------------------
+  // @ Accessors
+  // -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Stocke un User dans le ReplaySubject
+   */
+  set user(value: User) {
+    this._user.next(value);
+  }
+
+  /**
+   * Flux observable de User
+   */
+  get user$(): Observable<User> {
+    return this._user.asObservable();
+  }
+
+  // -----------------------------------------------------------------------------------------------------
+  // @ Public methods
+  // -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Récupère l'utilisateur connecté depuis l'API, calcule son name, et l'émet
+   */
+  get(): Observable<User> {
+    return this._httpClient
+      .get<UserDto>(`${environment.apiUrl}/user-management/user`)
+      .pipe(
+        map((dto) => this.toUser(dto)),
+        tap((user) => this._user.next(user))
+      );
+  }
+
+  /**
+   * Met à jour l'utilisateur via PATCH, recalcule son name, et l'émet
+   */
+  update(userDto: UserDto): Observable<User> {
+    return this._httpClient
+      .patch<UserDto>(
+        `${environment.apiUrl}/user-management/user`,
+        { user: userDto }
+      )
+      .pipe(
+        map((dto) => this.toUser(dto)),
+        tap((user) => this._user.next(user))
+      );
+  }
+
+  // -----------------------------------------------------------------------------------------------------
+  // @ Helpers
+  // -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Transforme un UserDto en User en y ajoutant le champ name
+   */
+  private toUser(dto: UserDto): User {
+    return {
+      ...dto,
+      // cast au type User pour satisfaire l'interface
+      name: this.computeDisplayName(dto),
+    } as User;
+  }
+
+  /**
+   * Détermine le display name selon la priorité :
+   * 1) firstName + lastName
+   * 2) username
+   * 3) email
+   * 4) walletAddress (si présent dans le DTO)
+   * 5) "Anonymous"
+   */
+  private computeDisplayName(dto: UserDto): string {
+    if (dto.firstName && dto.lastName) {
+      return `${dto.firstName} ${dto.lastName}`;
     }
-
-    get user$(): Observable<UserDto> {
-        return this._user.asObservable();
+    if (dto.username) {
+      return dto.username;
     }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Get the current signed-in user data
-     */
-    get(): Observable<UserDto> {
-        return this._httpClient.get<UserDto>(`${environment.apiUrl}/user-management/user`).pipe(
-            tap((user) => {
-                this._user.next(user);
-            })
-        );
+    if (dto.email) {
+      return dto.email;
     }
-
-    /**
-     * Update the user
-     *
-     * @param user
-     */
-    update(user: UserDto): Observable<any> {
-        return this._httpClient.patch<UserDto>(`${environment.apiUrl}/user-management/user`, { user }).pipe(
-            map((response) => {
-                this._user.next(response);
-            })
-        );
+    // Si le DTO contient un walletAddress (Web3), on l'utilise
+    const wallet = (dto as any).walletAddress;
+    if (typeof wallet === 'string' && wallet.length > 0) {
+      return wallet;
     }
+    // Fallback ultime
+    return 'Anonymous';
+  }
 }

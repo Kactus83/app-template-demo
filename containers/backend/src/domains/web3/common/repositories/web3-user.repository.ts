@@ -21,6 +21,9 @@ export class Web3UserRepository {
         userAuthMethods: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
         
       },
     });
@@ -45,6 +48,9 @@ export class Web3UserRepository {
         userAuthMethods: true,
         messages: true,
         oauthMFATokens: true,
+        connectionHistories: true,
+        passwordHistories: true,
+        authMethodsHistories: true,
       },
     });
   }

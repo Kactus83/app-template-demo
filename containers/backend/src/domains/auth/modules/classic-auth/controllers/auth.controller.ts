@@ -16,8 +16,8 @@ import {
 } from '@nestjs/swagger';
 
 import { AuthService } from '../services/auth.service';
-import { LoginDto } from '../models/dto/login.dto';
-import { AddClassicAuthDto } from '../models/dto/addClassicAuth.dto';
+import { EmailLoginDto, UsernameLoginDto } from '../models/dto/login.dto';
+import { AddEmailClassicAuthDto, AddUsernameClassicAuthDto } from '../models/dto/addClassicAuth.dto';
 import { IAuthenticatedRequest } from '../../../../../core/models/interfaces/authenticated-request.interface';
 import { AuthGuard } from '../../../../../core/guards/auth.guard';
 import { plainToInstance } from 'class-transformer';
@@ -40,7 +40,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Login successful.' })
   @ApiResponse({ status: 400, description: 'Invalid email or password.' })
-  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
+  async login(@Body() loginDto: EmailLoginDto | UsernameLoginDto): Promise<LoginResponseDto> {
     try {
       const { user, token } = await this.authService.login(loginDto);
       const userDto = plainToInstance(UserDto, user);
@@ -93,7 +93,7 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   async addClassicAuth(
     @Req() req: IAuthenticatedRequest,
-    @Body() addClassicAuthDto: AddClassicAuthDto,
+    @Body() addClassicAuthDto: AddEmailClassicAuthDto | AddUsernameClassicAuthDto,
   ): Promise<{ message: string; user: UserDto }> {
     try {
       const user = req.user;

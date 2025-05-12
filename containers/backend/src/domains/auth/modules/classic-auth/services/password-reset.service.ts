@@ -26,7 +26,9 @@ export class PasswordResetService {
     const token = await this.passwordResetTokenRepository.createToken(user.id);
 
     // Send password reset email using EmailService
-    await this.emailService.sendPasswordResetEmail(user.name, user.email, token.token);
+
+    const userName = user.username ?? user.firstName ?? user.email.split('@')[0];
+    await this.emailService.sendPasswordResetEmail(userName, user.email, token.token);
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {

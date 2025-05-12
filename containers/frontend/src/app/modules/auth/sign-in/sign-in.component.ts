@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { EmailLoginDto, UsernameLoginDto } from '@custom/auth/classic-auth/models/dto/auth.dto';
 import { CustomOAuthSelectorComponent } from '@custom/auth/oauth/components/custom-oauth-selector.component';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
@@ -68,9 +69,9 @@ export class AuthSignInComponent implements OnInit {
     ngOnInit(): void {
         // Create the form
         this.signInForm = this._formBuilder.group({
-            email: [
-                'hughes.brian@company.com',
-                [Validators.required, Validators.email],
+            identifier: [
+                'your.email@provider.com',
+                [Validators.required],
             ],
             password: ['admin', Validators.required],
             rememberMe: [''],
@@ -96,8 +97,12 @@ export class AuthSignInComponent implements OnInit {
         // Hide the alert
         this.showAlert = false;
 
-        // Sign in
-        this._authService.signIn(this.signInForm.value).subscribe(
+            const { identifier, password } = this.signInForm.value;
+            const credentials: EmailLoginDto | UsernameLoginDto = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)
+                ? { email: identifier, password }
+                : { username: identifier, password };
+
+            this._authService.signIn(credentials).subscribe(
             () => {
                 // Set the redirect url.
                 // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user

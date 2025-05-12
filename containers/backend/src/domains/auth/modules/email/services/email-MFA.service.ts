@@ -44,7 +44,8 @@ export class EmailMFAService extends AuthMethodService {
     await this.emailMFARepository.create(userId, code, expiresAt);
 
     // Envoyer l'email de validation MFA
-    await this.emailService.sendEmailMFA(user.name, user.email, code);
+    const userName = user.username ?? user.firstName ?? user.email.split('@')[0];
+    await this.emailService.sendEmailMFA(userName, user.email, code);
 
     this.logger.log(`MFA email sent to ${user.email}`);
   }

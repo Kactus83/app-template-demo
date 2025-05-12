@@ -31,6 +31,7 @@ export * from './guards/auth.guard';
 // Middlewares
 export * from './middlewares/morgan.middleware';
 export * from './middlewares/session.middleware';
+export * from './middlewares/metadata.middleware';
 
 // Modèles
 // Décorateurs
@@ -43,6 +44,8 @@ export * from './models/dto/user.dto';
 
 // Interfaces
 export * from './models/interfaces/authenticated-request.interface';
+export * from './models/interfaces/request-metadata.interface';
+export * from './models/interfaces/tracked-request.interface';
 
 // Types
 export * from './models/types/auth-subject.enum';
