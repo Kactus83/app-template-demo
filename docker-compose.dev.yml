@@ -72,6 +72,8 @@ services:
       - "${PORT}:${PORT}"
     env_file:
       - .env.prod
+    environment:
+      - DATABASE_URL=postgresql://my_user:my_password@database:5432/my_database?schema=public
     depends_on:
       - database
       - mailhog

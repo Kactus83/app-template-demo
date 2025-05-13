@@ -14,7 +14,7 @@ import { join } from 'path';
   imports: [
     ServeStaticModule.forRoot({
       // Chemin absolu dans l'image où se trouve la doc
-      rootPath: join(process.cwd(), 'deployments', 'backend', 'docs'),
+      rootPath: join(process.cwd(), 'docs'),
       // Chemin d'accès HTTP => http://localhost:3000/docs
       serveRoot: '/docs',
     }),

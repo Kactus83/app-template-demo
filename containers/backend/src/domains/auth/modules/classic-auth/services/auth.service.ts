@@ -47,7 +47,7 @@ export class AuthService {
       throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
     }
 
-    const token = this.jwtUtilityService.signToken({
+    const token = this.jwtUtilityService.signUserToken({
       userId: user.id,
       roles: user.roles,
     });
@@ -81,7 +81,7 @@ export class AuthService {
 
     let token = currentToken;
     if (this.jwtUtilityService.isTokenExpiringSoon(currentToken)) {
-      token = this.jwtUtilityService.signToken({
+      token = this.jwtUtilityService.signUserToken({
         userId: user.id,
         roles: user.roles,
       });

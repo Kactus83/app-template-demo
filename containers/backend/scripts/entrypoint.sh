@@ -45,8 +45,12 @@ echo "--------------------------------------------------------------------------
 echo " "
 echo " "
 
-npx prisma migrate dev --name init
-npx prisma migrate deploy
+# Pour la premiere init
+# npx prisma migrate dev --name init
+# npx prisma migrate deploy
+
+# Pour les migrations suivantes en cas de reset total de la base de données
+npx prisma migrate reset --force
 
 # Afficher une bannière moins imposante avant de démarrer l'application
 echo " "

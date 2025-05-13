@@ -106,7 +106,7 @@ export class EmailChangeService {
    * Confirmation de changement d'email primaire pour un utilisateur.
    * @param token Token de confirmation.
    */
-  async confirmEmailChange(token: string): Promise<void> {
+  async confirmEmailChange(token: string): Promise<string> {
     this.logger.log(`Confirming email change with token: ${token}`);
 
     const emailChangeToken = await this.emailChangeRepo.findByToken(token);
@@ -156,13 +156,14 @@ export class EmailChangeService {
     await this.emailChangeRepo.delete(token);
 
     this.logger.log(`Email changed successfully for userId: ${emailChangeToken.userId}`);
+    return emailChangeToken.newEmail;
   }
 
   /**
    * Confirmation du changement d'email secondaire pour un utilisateur.
    * @param token Token de confirmation.
    */
-  async confirmSecondaryEmailChange(token: string): Promise<void> {
+  async confirmSecondaryEmailChange(token: string): Promise<string> {
     this.logger.log(`Confirming secondary email change with token: ${token}`);
 
     const emailChangeToken = await this.emailChangeRepo.findByToken(token);
@@ -195,5 +196,6 @@ export class EmailChangeService {
     await this.emailChangeRepo.delete(token);
 
     this.logger.log(`Secondary email changed successfully for userId: ${emailChangeToken.userId}`);
+    return emailChangeToken.newEmail;
   }
 }

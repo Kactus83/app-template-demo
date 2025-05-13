@@ -124,7 +124,7 @@ export class Web3AuthService {
       throw new Error('Error creating user');
     }
 
-    const token = this.jwtUtilityService.signToken({ userId: user.id, roles: user.roles });
+    const token = this.jwtUtilityService.signUserToken({ userId: user.id, roles: user.roles });
 
     // Transformer l'utilisateur en DTO, incluant les web3Accounts
     const userDto = plainToClass(UserDto, user, { excludeExtraneousValues: true });

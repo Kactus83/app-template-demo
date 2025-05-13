@@ -1,5 +1,5 @@
 ﻿aws_region            = "eu-west-3"
-aws_account_id        = "123456789012"
+aws_account_id        = "645583760972"
 project_name          = "app-template-demo"
 db_name               = "my_database"
 db_user               = "my_user"

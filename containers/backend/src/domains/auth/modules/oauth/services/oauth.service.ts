@@ -57,7 +57,7 @@ export class OAuthService {
 
       // Générer le token
       const payload = { userId: user.id, roles: user.roles };
-      const token = this.jwtUtilityService.signToken(payload);
+      const token = this.jwtUtilityService.signUserToken(payload);
   
       // Retourner l'utilisateur en tant que DTO, incluant le token
       const userDto = plainToClass(UserDto, user, { excludeExtraneousValues: true });

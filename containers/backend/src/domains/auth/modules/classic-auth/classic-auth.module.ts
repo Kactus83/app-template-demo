@@ -9,6 +9,7 @@ import { PasswordResetTokenRepository } from './repositories/password-reset-toke
 import { CommunicationDomain } from '../../../../domains/communication/communication.domain';
 import { ClassicAuthMFAService } from './services/classic-auth-mfa.service';
 import { CommonModule } from '../../common/common.module';
+import { PasswordHistoryRepository } from './repositories/password-history.repository';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CommonModule } from '../../common/common.module';
   providers: [
     AuthService,
     RegisterService,
+    PasswordHistoryRepository,
     PasswordResetService,
     PasswordResetTokenRepository,
     ClassicAuthMFAService,

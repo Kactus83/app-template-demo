@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
+import { AuthSeedService } from './common/services/auth-seed.service';
 import { ClassicAuthModule } from './modules/classic-auth/classic-auth.module';
 import { Web3Module } from './modules/web3/web3.module';
 import { AuthenticatorModule } from './modules/authenticator/authenticator.module';
@@ -39,7 +40,14 @@ import { MFAModule } from './modules/MFA/mfa.module';
     OAuthModule,
     MFAModule,
   ],
-  providers: [],
+  providers: [
+    // Force instanciation d'AuthSeedService au bootstrap
+    {
+      provide: 'AUTH_SEED_INITIALIZER',
+      useFactory: (seed: AuthSeedService) => seed,
+      inject: [AuthSeedService],
+    },
+  ],
   exports: [],
 })
 export class AuthDomain {}

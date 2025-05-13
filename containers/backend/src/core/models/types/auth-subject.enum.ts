@@ -4,7 +4,7 @@
  * @category Core
  */
 export enum AuthSubject {
-    AUTH = 'auth',
-    MFA = 'mfa',
-  }
-  
+  AUTH = 'auth',
+  MFA = 'mfa',
+  SERVICE_ACCOUNT = 'service_account',
+}

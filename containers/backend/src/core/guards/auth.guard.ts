@@ -8,16 +8,19 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IAuthenticatedRequest } from '../models/interfaces/authenticated-request.interface';
-import { ConfigService } from '@nestjs/config';
 import { MainUserRepository } from '../repositories/main-user.repository';
-import { verify } from 'jsonwebtoken';
-import { UserRole } from '@prisma/client';
+import { JwtUtilityService } from '../services/jwt-utility.service';
+import { UserRole, SecureAction } from '@prisma/client';
 import { ROLES_KEY } from '../models/decorators/roles.decorator';
+import { MFA_KEY } from '../models/decorators/mfa.decorator';
 import { JwtPayloadDto } from '../models/dto/jwt-payload.dto';
+import { JwtMfaPayloadDto } from '../models/dto/jwt-mfa-payload.dto';
 
 /**
- * Gardien de route pour la protection des endpoints nécessitant une authentification.
- * Vérifie la présence et la validité du token JWT, charge l'utilisateur associé et contrôle les rôles requis.
+ * Gardien de route pour la protection des endpoints.
+ * Gère en premier la vérification MFA si @Mfa(...) est présent,
+ * sinon l’authentification standard via JWT utilisateur.
+ * Contrôle ensuite les rôles si @Roles(...) est utilisé.
  * @category Core
  * @category Guards
  */
@@ -28,7 +31,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly mainUserRepository: MainUserRepository,
-    private readonly configService: ConfigService,
+    private readonly jwtUtility: JwtUtilityService,
   ) {
     this.logger.log('AuthGuard loaded');
   }
@@ -36,40 +39,72 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<IAuthenticatedRequest>();
     const authHeader = request.headers['authorization'];
-
-    // Vérification de la présence de l'en-tête Authorization
     if (!authHeader) {
       throw new UnauthorizedException('Access Token Required');
     }
-
     const token = authHeader.split(' ')[1];
-
     if (!token) {
       throw new UnauthorizedException('Access Token Required');
     }
 
-    try {
-      const secret = this.configService.get<string>('JWT_SECRET');
-      const decoded = verify(token, secret) as JwtPayloadDto;
-
-      const user = await this.mainUserRepository.findUserById(decoded.userId);
+    // 1️⃣ Vérification MFA si demandé
+    const requiredMfa = this.reflector.get<SecureAction>(
+      MFA_KEY,
+      context.getHandler(),
+    );
+    if (requiredMfa) {
+      let mfaPayload: JwtMfaPayloadDto;
+      try {
+        mfaPayload = this.jwtUtility.verifyMfaToken(token);
+      } catch (err) {
+        this.logger.error('Invalid MFA Token', err);
+        throw new ForbiddenException('Invalid MFA Token');
+      }
+      if (mfaPayload.action !== requiredMfa) {
+        throw new ForbiddenException(
+          `MFA token action mismatch (expected ${requiredMfa})`,
+        );
+      }
+      const user = await this.mainUserRepository.findUserById(
+        mfaPayload.userId,
+      );
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-
       request.user = user;
-
-      // Utilise le Reflector de NestJS pour obtenir les rôles requis pour l'endpoint actuel.
-      // Les rôles sont définis à l'aide du décorateur @Roles() sur les handlers (méthodes des contrôleurs).
-      const requiredRoles = this.reflector.get<UserRole[]>(ROLES_KEY, context.getHandler());
-      if (requiredRoles && !requiredRoles.some(role => user.roles.includes(role))) {
-        throw new ForbiddenException(`Access denied for roles: ${requiredRoles.join(', ')}`);
-      }
-
       return true;
-    } catch (error) {
-      this.logger.error(`Invalid Token: ${error.message}`);
-      throw new ForbiddenException('Invalid Token');
     }
+
+    // 2️⃣ Authentification utilisateur standard
+    let userPayload: JwtPayloadDto;
+    try {
+      userPayload = this.jwtUtility.verifyToken(token);
+    } catch (err) {
+      this.logger.error('Invalid JWT', err);
+      throw new UnauthorizedException('Invalid Token');
+    }
+    const user = await this.mainUserRepository.findUserById(
+      userPayload.userId,
+    );
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    request.user = user;
+
+    // 3️⃣ Contrôle des rôles si nécessaire
+    const requiredRoles = this.reflector.get<UserRole[]>(
+      ROLES_KEY,
+      context.getHandler(),
+    );
+    if (
+      requiredRoles &&
+      !requiredRoles.some((r) => user.roles.includes(r))
+    ) {
+      throw new ForbiddenException(
+        `Access denied for roles: ${requiredRoles.join(', ')}`,
+      );
+    }
+
+    return true;
   }
 }

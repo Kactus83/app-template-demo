@@ -43,6 +43,19 @@ enum SecureAction {
   ALL
 }
 
+/// Définition des enums pour les scopes
+enum ScopeTarget {
+  AUTH
+  USER
+  BUSINESS
+}
+
+enum ScopePermission {
+  READ
+  WRITE
+}
+
+/// Enumération pour les roles d'utilisateurs
 enum UserRole {
   USER
   ADMIN
@@ -114,9 +127,42 @@ model User {
   connectionHistories       ConnectionHistory[]
   passwordHistories         PasswordHistory[]
   authMethodsHistories      AuthMethodsHistory[]
+  serviceAccounts           UserServiceAccount[]
 }
 
 
+
+/// Compte service pour les scrips / app externes de l'utilisateur
+model UserServiceAccount {
+  id               String                   @id @default(uuid())
+  userId           Int
+  name             String                   // ex. "CLI principal", "Webhook Bot"
+  clientId         String                   @unique
+  clientSecret     String                   // hashé (bcrypt/argon2)
+  validFrom        DateTime                 @default(now())
+  validTo          DateTime?                // null = illimité
+  allowedIps       String[]                // liste d’IP ou CIDR
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  /// Relation vers l’utilisateur “maître”
+  user             User                     @relation(fields: [userId], references: [id])
+
+  /// Scopes autorisés pour ce compte
+  scopes           ServiceAccountScope[]
+}
+
+/// Association 1-N entre compte service et scopes (target + permission)
+model ServiceAccountScope {
+  id               Int                      @id @default(autoincrement())
+  accountId        String
+  target           ScopeTarget
+  permission       ScopePermission
+
+  account          UserServiceAccount       @relation(fields: [accountId], references: [id])
+
+  @@unique([accountId, target, permission])
+}
 
 /// Historique des connexions d’un utilisateur
 model ConnectionHistory {
