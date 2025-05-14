@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader';
 import { provideVersion } from '@custom/version/version.provider';
 import { provideCustomAuth } from '@custom/auth/custom-auth.provider';
+import { provideMetadata } from '@custom/metadatas/metadata.provider';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -78,6 +79,7 @@ export const appConfig: ApplicationConfig = {
         }),
 
         // Custom Providers
+        provideMetadata(),
         provideVersion(),
         provideCustomAuth(),
 

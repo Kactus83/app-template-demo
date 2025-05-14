@@ -1,17 +1,23 @@
+import { ClientMetadataDto } from '../dto/client-metadata.dto';
+
 /**
- * Données collectées automatiquement par le middleware de metadata.
- * Ne contient pas d’information d’authentification utilisateur.
+ * Métadonnées stockées sur chaque requête :
+ * - réseau (IP / user-agent), horodatage serveur
+ * - métadonnées client (optionnelles) transmises par le front
+ *
+ * @category Core
+ * @subcategory Interfaces
  */
 export interface IRequestMetadata {
-    /** Horodatage de la requête */
-    timestamp: Date;
-  
-    /** Info réseau et client */
-    network: {
-      /** Adresse IP source (req.ip) */
-      ipAddress: string;
-      /** User-Agent du client (req.headers['user-agent']) */
-      userAgent?: string;
-    };
-  }
-  
+  /** Horodatage côté serveur */
+  timestamp: Date;
+
+  /** Infos réseau */
+  network: {
+    ipAddress: string;
+    userAgent: string;
+  };
+
+  /** Métadonnées front-end, si fournies */
+  client?: ClientMetadataDto;
+}
