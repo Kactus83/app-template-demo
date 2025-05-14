@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
-import * as nodeVault from 'node-vault';
+import nodeVault from 'node-vault';
 import { VaultSecrets } from '../types/vault-secrets.class';
 import { plainToInstance } from 'class-transformer';
 import { EnvConfig } from '../../config/types/env.config';

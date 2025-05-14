@@ -37,9 +37,13 @@ export * from './middlewares/metadata.middleware';
 // Décorateurs
 export * from './models/decorators/roles.decorator';
 export * from './models/decorators/token.decorator';
+export * from './models/decorators/mfa.decorator';
 
 // DTO
 export * from './models/dto/jwt-payload.dto';
+export * from './models/dto/jwt-mfa-payload.dto';
+export * from './models/dto/jwt-service-account-payload.dto';
+export * from './models/dto/client-metadata.dto';
 export * from './models/dto/user.dto';
 
 // Interfaces

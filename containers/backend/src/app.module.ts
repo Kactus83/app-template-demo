@@ -9,7 +9,7 @@ import { AuthDomain } from './domains/auth/auth.domain';
 import { SearchDomain } from './domains/search/search.domain';
 import { Web3Domain } from './domains/web3/web3.domain';
 import { VersionCheckMiddleware } from './domains/app/modules/version/middlewares/version-check.middleware';
-import { MetadataMiddleware } from './app.barrel';
+import { MetadataMiddleware } from './core/middlewares/metadata.middleware';
 
 /**
  * @module AppModule
@@ -38,7 +38,7 @@ export class AppModule implements NestModule {
       .apply(SessionMiddleware, MorganMiddleware, VersionCheckMiddleware, MetadataMiddleware)
       .exclude(
         { path: 'api-docs', method: RequestMethod.ALL },
-        { path: 'docs/(.*)', method: RequestMethod.ALL },
+        { path: 'docs', method: RequestMethod.ALL },
         { path: 'health', method: RequestMethod.ALL },
       )
       .forRoutes('*');

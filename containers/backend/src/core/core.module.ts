@@ -5,7 +5,6 @@ import { PrismaService } from './services/prisma.service';
 import { MainUserRepository } from './repositories/main-user.repository';
 import { HealthModule } from './modules/health/health.module';
 import { HealthController } from './modules/health/health.controller';
-import { AuthGuard } from './guards/auth.guard';
 import { VaultModule } from './modules/vault/vault.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtUtilityService } from './services/jwt-utility.service';
@@ -44,7 +43,6 @@ import { StorageModule } from './modules/storage/storage.module';
   providers: [
     PrismaService,
     MainUserRepository,
-    AuthGuard,
     JwtUtilityService, 
   ],
   exports: [
@@ -53,7 +51,6 @@ import { StorageModule } from './modules/storage/storage.module';
     StorageModule,
     MainUserRepository,
     HealthModule,
-    AuthGuard,
     JwtUtilityService, 
     JwtModule, 
   ],
