@@ -70,7 +70,21 @@ export const appRoutes: Route[] = [
             { path: 'profile', loadChildren: () => import('app/modules/user/user-profile/user-profile.routes') },
             { path: 'settings', loadChildren: () => import('app/modules/user/user-settings/user-settings.routes') },
         ]
-    },    
+    },   
+    
+    // Auth routes for Demo Module
+    {
+        path: 'demo',
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard],
+        component: LayoutComponent,
+        resolve: {
+            initialData: initialDataResolver
+        },
+        children: [
+            { path: 'templates-overview', loadChildren: () => import('app/modules/demo/templates-overview/templates-overview.routes') },
+        ]
+    },
 
     // Landing routes
     {

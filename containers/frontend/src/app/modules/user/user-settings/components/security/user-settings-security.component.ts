@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { UserEmailSettingsComponent }               from '@custom/user/components/email/user-email-settings.component';
 import { PhoneManagementComponent }                 from '@custom/auth/phone/components/phone-management.component';
 import { AuthenticatorManagementComponent }         from '@custom/auth/authenticator/components/authenticator-management.component';
 import { ServiceAccountsManagementComponent }       from '@custom/auth/service-accounts/components/service-accounts-management/service-accounts-management.component';
@@ -15,7 +14,6 @@ import { ServiceAccountsManagementComponent }       from '@custom/auth/service-a
   standalone: true,
   imports: [
     CommonModule,
-    UserEmailSettingsComponent,
     PhoneManagementComponent,
     AuthenticatorManagementComponent,
     ServiceAccountsManagementComponent,

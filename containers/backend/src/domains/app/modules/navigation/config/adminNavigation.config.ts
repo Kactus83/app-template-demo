@@ -11,11 +11,11 @@ export const initialAdminNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar', 
-      link: '/web3/token-buy', 
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
   default: [
@@ -27,11 +27,11 @@ export const initialAdminNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar',
-      link: '/web3/token-buy',
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
   futuristic: [
@@ -43,11 +43,11 @@ export const initialAdminNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar',
-      link: '/web3/token-buy',
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
   horizontal: [
@@ -59,11 +59,11 @@ export const initialAdminNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar',
-      link: '/web3/token-buy',
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
 };

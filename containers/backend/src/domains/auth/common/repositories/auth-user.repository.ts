@@ -25,6 +25,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -47,6 +50,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
 
       },
     });
@@ -75,6 +81,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -97,6 +106,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -119,6 +131,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -141,6 +156,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -180,6 +198,9 @@ export class AuthUserRepository {
           connectionHistories: true,
           passwordHistories: true,
           authMethodsHistories: true,
+          serviceAccounts: true,
+          preferences: true,
+          profile: true,
         },
       });
     } catch (error) {
@@ -207,6 +228,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -230,6 +254,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -253,6 +280,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -276,6 +306,9 @@ export class AuthUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }
@@ -314,6 +347,9 @@ export class AuthUserRepository {
           connectionHistories: true,
           passwordHistories: true,
           authMethodsHistories: true,
+          serviceAccounts: true,
+          preferences: true,
+          profile: true,
         },
       });
     } catch (error) {

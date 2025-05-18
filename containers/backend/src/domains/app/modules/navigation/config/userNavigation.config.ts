@@ -1,7 +1,7 @@
 import { NavigationType } from '@prisma/client';
 
 export const initialUserNavigation = {
-  type: NavigationType.USER,
+  type: NavigationType.ADMIN,
   compact: [
     {
       id: 'example',
@@ -11,11 +11,11 @@ export const initialUserNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar', 
-      link: '/web3/token-buy', 
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
   default: [
@@ -27,11 +27,11 @@ export const initialUserNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar',
-      link: '/web3/token-buy',
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
   futuristic: [
@@ -43,11 +43,11 @@ export const initialUserNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar',
-      link: '/web3/token-buy',
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
   horizontal: [
@@ -59,11 +59,11 @@ export const initialUserNavigation = {
       link: '/example',
     },
     {
-      id: 'token-buy',
-      title: 'Buy Tokens',
+      id: 'templates-overview',
+      title: 'Templates Overview',
       type: 'basic',
-      icon: 'heroicons_outline:currency-dollar',
-      link: '/web3/token-buy',
+      icon: 'heroicons_outline:chart-pie',
+      link: '/demo/templates-overview',
     },
   ],
 };

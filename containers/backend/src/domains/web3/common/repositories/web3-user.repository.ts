@@ -24,6 +24,9 @@ export class Web3UserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
         
       },
     });
@@ -51,6 +54,9 @@ export class Web3UserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }

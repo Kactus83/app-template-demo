@@ -37,6 +37,9 @@ export class MainUserRepository {
         connectionHistories: true,
         passwordHistories: true,
         authMethodsHistories: true,
+        serviceAccounts: true,
+        preferences: true,
+        profile: true,
       },
     });
   }

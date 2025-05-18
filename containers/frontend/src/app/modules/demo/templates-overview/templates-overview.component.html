@@ -1,0 +1,24 @@
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <ng-container *ngIf="templates$ | async as templates; else noData">
+    <ng-container *ngFor="let tpl of templates">
+      <fuse-card class="flex flex-col p-6">
+        <!-- Titre -->
+        <div class="text-xl font-semibold mb-2">{{ tpl.name }}</div>
+        <!-- Description (facultative) -->
+        <div class="text-secondary mb-4" *ngIf="tpl.description">
+          {{ tpl.description }}
+        </div>
+        <!-- Bouton de téléchargement -->
+        <button mat-flat-button color="primary" (click)="download(tpl)">
+          <mat-icon class="mr-2">cloud_download</mat-icon>
+          Télécharger
+        </button>
+      </fuse-card>
+    </ng-container>
+  </ng-container>
+  <ng-template #noData>
+    <div class="text-center text-secondary col-span-full">
+      Aucun template disponible.
+    </div>
+  </ng-template>
+</div>
