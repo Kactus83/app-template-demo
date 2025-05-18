@@ -21,14 +21,12 @@ import { MFA_KEY } from '../models/decorators/mfa.decorator';
 import { SCOPE_KEY } from '../models/decorators/scope.decorator';
 import { JwtPayloadDto } from '../models/dto/jwt-payload.dto';
 import { JwtMfaPayloadDto } from '../models/dto/jwt-mfa-payload.dto';
-import { JwtServiceAccountPayloadDto } from '../models/dto/jwt-service-account-payload.dto';
 
 /**
- * Gardien de route pour la protection des endpoints.
- * 
- * 1️⃣ Si décoré @Mfa, vérifie un token MFA (MFA_KEY).
- * 2️⃣ Sinon, si décoré @Scope, vérifie un token ServiceAccount + scope (SCOPE_KEY).
- * 3️⃣ Sinon, vérifie un token utilisateur + rôles éventuels (ROLES_KEY).
+ * Gardien de route principal pour :
+ *  1️⃣ Exiger une validation MFA si la route est décorée avec @Mfa(...)
+ *  2️⃣ Autoriser un Service Account si la route est décorée avec @Scope(...)
+ *  3️⃣ Sinon, valider un JWT utilisateur standard et éventuellement @Roles(...)
  *
  * @category Core
  * @category Guards
@@ -42,21 +40,21 @@ export class AuthGuard implements CanActivate {
     private readonly mainUserRepository: MainUserRepository,
     private readonly jwtUtility: JwtUtilityService,
   ) {
-    this.logger.log('AuthGuard loaded');
+    this.logger.log('AuthGuard chargé');
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest<IAuthenticatedRequest>();
-    const authHeader = req.headers['authorization'];
+    const request = context.switchToHttp().getRequest<IAuthenticatedRequest>();
+    const authHeader = request.headers['authorization'];
     if (!authHeader) {
-      throw new UnauthorizedException('Access Token Required');
+      throw new UnauthorizedException('Jeton d’accès requis');
     }
     const token = authHeader.split(' ')[1];
     if (!token) {
-      throw new UnauthorizedException('Access Token Required');
+      throw new UnauthorizedException('Jeton d’accès requis');
     }
 
-    // 1️⃣ MFA ?
+    // 1️⃣ Validation MFA
     const requiredMfa = this.reflector.get<SecureAction>(
       MFA_KEY,
       context.getHandler(),
@@ -66,68 +64,64 @@ export class AuthGuard implements CanActivate {
       try {
         mfaPayload = this.jwtUtility.verifyMfaToken(token);
       } catch (err) {
-        this.logger.error('Invalid MFA Token', err);
-        throw new ForbiddenException('Invalid MFA Token');
+        this.logger.error('Jeton MFA invalide', err);
+        throw new ForbiddenException('Jeton MFA invalide');
       }
       if (mfaPayload.action !== requiredMfa) {
         throw new ForbiddenException(
-          `MFA token action mismatch (expected ${requiredMfa})`,
+          `Action MFA non autorisée (attendu : ${requiredMfa})`,
         );
       }
       const user = await this.mainUserRepository.findUserById(
         mfaPayload.userId,
       );
       if (!user) {
-        throw new UnauthorizedException('User not found');
+        throw new UnauthorizedException('Utilisateur introuvable');
       }
-      req.user = user;
+      request.user = user;
       return true;
     }
 
-    // 2️⃣ Service Account + Scope ?
+    // 2️⃣ Validation via Service Account + @Scope(...)
     const requiredScope = this.reflector.get<{
       target: ScopeTarget;
       permission: ScopePermission;
     }>(SCOPE_KEY, context.getHandler());
     if (requiredScope) {
-      let svcPayload: JwtServiceAccountPayloadDto;
       try {
-        svcPayload = this.jwtUtility.verifyServiceAccountToken(token);
-      } catch (err) {
-        this.logger.error('Invalid ServiceAccount Token', err);
-        throw new ForbiddenException('Invalid ServiceAccount Token');
+        const svc = this.jwtUtility.verifyServiceAccountToken(token);
+        // format "auth:read", "user:write", etc.
+        const needed = `${requiredScope.target.toLowerCase()}:${requiredScope.permission.toLowerCase()}`;
+        if (svc.scopes.includes(needed)) {
+          const user = await this.mainUserRepository.findUserById(
+            svc.userId,
+          );
+          if (!user) {
+            throw new UnauthorizedException('Utilisateur introuvable');
+          }
+          request.user = user;
+          return true;
+        }
+      } catch {
+        // si le Service Account échoue, on retente le JWT utilisateur
       }
-      // vérifier que le scope requis est dans la liste du token
-      const needed = `${requiredScope.target.toLowerCase()}:${requiredScope.permission.toLowerCase()}`;
-      if (!svcPayload.scopes.includes(needed)) {
-        throw new ForbiddenException(`Missing scope: ${needed}`);
-      }
-      // charger l'utilisateur "maître" pour avoir le contexte dans req.user
-      const user = await this.mainUserRepository.findUserById(
-        svcPayload.userId,
-      );
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-      req.user = user;
-      return true;
     }
 
-    // 3️⃣ Auth utilisateur + rôles éventuels
+    // 3️⃣ JWT utilisateur standard + @Roles(...)
     let userPayload: JwtPayloadDto;
     try {
       userPayload = this.jwtUtility.verifyToken(token);
     } catch (err) {
-      this.logger.error('Invalid JWT', err);
-      throw new UnauthorizedException('Invalid Token');
+      this.logger.error('JWT invalide', err);
+      throw new UnauthorizedException('Jeton invalide');
     }
     const user = await this.mainUserRepository.findUserById(
       userPayload.userId,
     );
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('Utilisateur introuvable');
     }
-    req.user = user;
+    request.user = user;
 
     const requiredRoles = this.reflector.get<UserRole[]>(
       ROLES_KEY,
@@ -138,7 +132,7 @@ export class AuthGuard implements CanActivate {
       !requiredRoles.some((r) => user.roles.includes(r))
     ) {
       throw new ForbiddenException(
-        `Access denied for roles: ${requiredRoles.join(', ')}`,
+        `Accès refusé pour les rôles : ${requiredRoles.join(', ')}`,
       );
     }
 

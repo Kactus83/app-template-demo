@@ -1,7 +1,7 @@
 import { NavigationType } from '@prisma/client';
 
 export const initialUserNavigation = {
-  type: NavigationType.ADMIN,
+  type: NavigationType.USER,
   compact: [
     {
       id: 'example',
