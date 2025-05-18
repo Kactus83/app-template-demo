@@ -21,7 +21,7 @@ import { IssueTokenResponseDto } from '../models/dto/issue-token-response.dto';
  * @category Domains/Auth
  */
 @ApiTags('Service Account Auth')
-@Controller('service-accounts')
+@Controller('')
 export class ServiceAccountAuthController {
   constructor(
     private readonly auth: ServiceAccountAuthService,

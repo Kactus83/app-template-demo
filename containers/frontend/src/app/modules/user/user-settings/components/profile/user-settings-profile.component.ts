@@ -7,7 +7,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { UserService } from 'app/core/user/user.service';
 import { UserDto } from '@custom/common/models/dto/user.dto';
-import { UserProfileSummaryComponent } from '@custom/user/profile/user-profile-summary.component';
+import { UserProfileSummaryComponent } from '@custom/user/components/profile/user-profile-summary.component';
 
 @Component({
   selector: 'user-settings-profile',

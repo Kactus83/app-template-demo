@@ -20,7 +20,14 @@ export class UserUpdateDto {
   @IsString()
   @MaxLength(50)
   @Expose()
-  name?: string;
+  firstName?: string;
+
+  @ApiPropertyOptional({ description: "Prénom de l'utilisateur", maxLength: 50 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  @Expose()
+  lastName?: string;
 
   @ApiPropertyOptional({ description: "URL de l'avatar de l'utilisateur" })
   @IsOptional()

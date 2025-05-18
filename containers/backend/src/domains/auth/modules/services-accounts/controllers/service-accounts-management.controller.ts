@@ -31,7 +31,7 @@ import { CreateServiceAccountResponseDto } from '../models/dto/create-service-ac
    * @category Domains/Auth
    */
   @ApiTags('Service Accounts')
-  @Controller('service-accounts')
+  @Controller('')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   export class ServiceAccountsManagementController {

@@ -2,7 +2,7 @@ import { Injectable, Inject, Optional, forwardRef } from '@nestjs/common';
 import { UserWithRelations } from '../../../../../core/models/types/userWithRelations.type';
 import { UserUpdateDto } from '../models/dto/user-update.dto';
 import { ICommunicationDomain } from '../../../../../domains/communication/ICommunicationDomain';
-import { UserRepository } from '../repository/user.repository';
+import { UserRepository } from '../repositories/user.repository';
 import { CommunicationDomain } from '../../../../../domains/communication/communication.domain';
 import { StorageService } from 'src/core/modules/storage/services/storage.service';
 

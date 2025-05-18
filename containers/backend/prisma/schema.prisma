@@ -108,7 +108,7 @@ model User {
   updatedAt                 DateTime                @updatedAt
   authMethods               AuthenticationMethod[]
 
-  // Relations Existantes
+  // Relations Externes
   passwordResetTokens       PasswordResetToken[]
   emailChangeTokens         EmailChangeToken[]
   emailVerificationTokens   EmailVerificationToken[]
@@ -128,8 +128,34 @@ model User {
   passwordHistories         PasswordHistory[]
   authMethodsHistories      AuthMethodsHistory[]
   serviceAccounts           UserServiceAccount[]
+  preferences               UserPreferences?
+  profile                   UserProfile?   
+  templates                 UserTemplate[]     
 }
 
+/// Préférences générales de l’utilisateur
+model UserPreferences {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  locale    String   @default("en")    // ex. "fr", "en-GB"
+  timezone  String   @default("UTC")   // ex. "Europe/Paris"
+  theme     String   @default("light") // "light" | "dark"
+  updatedAt DateTime @updatedAt
+}
+
+/// Profil public de l’utilisateur
+model UserProfile {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+  bio         String?                 // texte libre
+  twitterUrl  String?                 // URL Twitter
+  linkedInUrl String?                 // URL LinkedIn
+  facebookUrl String?                 // URL Facebook
+  bannerUrl   String?                 // URL image de bannière
+  updatedAt   DateTime @updatedAt
+}
 
 
 /// Compte service pour les scrips / app externes de l'utilisateur
@@ -448,3 +474,31 @@ model Contract {
   updatedAt DateTime @updatedAt
 }
 
+model Template {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  filePath    String
+  size        Int?
+  createdAt   DateTime  @default(now())
+
+  // relation vers les téléchargements par utilisateur
+  userTemplates UserTemplate[]
+}
+
+/// Table de liaison pour les téléchargements/utilisation par utilisateur
+model UserTemplate {
+  /// composite PK (1 seul enregistrement par user/template)
+  userId      Int
+  templateId  Int
+
+  /// nombre de téléchargements
+  downloadCount Int   @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  template Template @relation(fields: [templateId], references: [id])
+
+  @@id([userId, templateId])
+}

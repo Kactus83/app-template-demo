@@ -1,44 +1,51 @@
-/**
- * @fileoverview Composant de haut niveau pour afficher le profil utilisateur.
- * Ce composant récupère l'utilisateur via le service et intègre le micro composant
- * user-profile-summary pour afficher un résumé du profil.
- */
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TextFieldModule } from '@angular/cdk/text-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FuseCardComponent } from '@fuse/components/card';
 import { UserService } from 'app/core/user/user.service';
-import { UserDto } from '@custom/common/models/dto/user.dto';
-import { UserProfileSummaryComponent } from '@custom/user/profile/user-profile-summary.component';
+import { User } from 'app/core/user/user.types';
 
 @Component({
-    selector     : 'user-profile',
-    standalone   : true,
-    imports      : [UserProfileSummaryComponent],
-    templateUrl  : './user-profile.component.html',
-    encapsulation: ViewEncapsulation.None,
+  selector: 'user-profile',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    FuseCardComponent,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TextFieldModule,
+    MatDividerModule,
+    MatTooltipModule
+  ],
+  templateUrl: './user-profile.component.html',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserProfileComponent implements OnInit
 {
-    /**
-     * Données de l'utilisateur.
-     */
-    user!: UserDto;
+  /** L’utilisateur courant, rempli au chargement */
+  user!: User;
 
-    /**
-     * Constructeur avec injection du service utilisateur.
-     * @param _userService Service permettant de récupérer les informations utilisateur.
-     */
-    constructor(private _userService: UserService)
-    {
-    }
+  constructor(private _userService: UserService) {}
 
-    /**
-     * Cycle de vie : initialisation du composant.
-     * On récupère l'utilisateur à l'initialisation.
-     */
-    ngOnInit(): void
-    {
-        this._userService.get().subscribe((user: UserDto) => {
-            this.user = user;
-        });
-    }
+  ngOnInit(): void
+  {
+    this._userService.get().subscribe((user: User) => {
+        console.log("user : ", user);
+        this.user = user;
+    });
+  }
 }

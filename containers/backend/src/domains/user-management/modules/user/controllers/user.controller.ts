@@ -38,7 +38,7 @@ import { extname } from 'path';
 @ApiTags('USER MANAGEMENT - User')
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
-@Controller('user')
+@Controller('')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -49,7 +49,7 @@ export class UserController {
    * @returns Le profil utilisateur.
    * @throws {HttpException} Si l'utilisateur n'est pas trouvé.
    */
-  @Get('/')
+  @Get()
   @ApiOperation({ summary: 'Retrieve the current user profile' })
   @ApiResponse({
     status: 200,
@@ -80,7 +80,7 @@ export class UserController {
    * @returns Le profil utilisateur mis à jour.
    * @throws {HttpException} Si les données sont invalides ou l'utilisateur non trouvé.
    */
-  @Patch('/')
+  @Patch()
   @ApiOperation({ summary: 'Update the current user profile' })
   @ApiResponse({
     status: 200,

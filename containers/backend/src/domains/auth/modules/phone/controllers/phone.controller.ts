@@ -32,7 +32,7 @@ import { AuthMethodsHistoryService } from '../../../common/services/auth-methods
 import { AuthMethodsHistoryType, ChangeInitiator } from '@prisma/client';
 
 @ApiTags('AUTH - Phone')
-@Controller()
+@Controller('')
 @UseGuards(AuthGuard)
 export class PhoneController {
   private readonly logger = new Logger(PhoneController.name);

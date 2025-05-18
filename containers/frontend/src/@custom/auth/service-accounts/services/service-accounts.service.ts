@@ -25,7 +25,7 @@ export class ServiceAccountsService {
     dto: CreateServiceAccountDto,
   ): Observable<CreateServiceAccountResponseDto> {
     return this.http.post<CreateServiceAccountResponseDto>(
-      `${this.baseUrl}/service-accounts`,
+      `${this.baseUrl}/auth/services-accounts`,
       dto,
     );
   }
@@ -35,7 +35,7 @@ export class ServiceAccountsService {
    */
   list(): Observable<ServiceAccountDto[]> {
     return this.http.get<ServiceAccountDto[]>(
-      `${this.baseUrl}/service-accounts`,
+      `${this.baseUrl}/auth/services-accounts`,
     );
   }
 
@@ -49,7 +49,7 @@ export class ServiceAccountsService {
     dto: UpdateServiceAccountDto,
   ): Observable<ServiceAccountDto> {
     return this.http.put<ServiceAccountDto>(
-      `${this.baseUrl}/service-accounts/${id}`,
+      `${this.baseUrl}/auth/services-accounts/${id}`,
       dto,
     );
   }
@@ -60,7 +60,7 @@ export class ServiceAccountsService {
    */
   revoke(id: string): Observable<void> {
     return this.http.delete<void>(
-      `${this.baseUrl}/service-accounts/${id}`,
+      `${this.baseUrl}/auth/services-accounts/${id}`,
     );
   }
 
@@ -70,7 +70,7 @@ export class ServiceAccountsService {
    */
   rotate(id: string): Observable<{ clientSecret: string }> {
     return this.http.post<{ clientSecret: string }>(
-      `${this.baseUrl}/service-accounts/${id}/rotate`,
+      `${this.baseUrl}/auth/services-accounts/${id}/rotate`,
       {},
     );
   }

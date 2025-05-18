@@ -10,6 +10,7 @@ import { AuthSettingsModule } from './modules/auth-settings/auth-settings.module
 import { EmailModule } from './modules/email/email.module';
 import { OAuthModule } from './modules/oauth/oauth.module';
 import { MFAModule } from './modules/MFA/mfa.module';
+import { ServicesAccountsModule } from './modules/services-accounts/services-accounts-module';
 
 /**
  * @domain AuthDomain
@@ -30,6 +31,7 @@ import { MFAModule } from './modules/MFA/mfa.module';
       { path: 'auth/email', module: EmailModule },
       { path: 'auth/oauth', module: OAuthModule },
       { path: 'auth/mfa', module: MFAModule },
+      { path: 'auth/services-accounts', module: ServicesAccountsModule },
     ]),
     ClassicAuthModule,
     Web3Module,

@@ -27,6 +27,7 @@ export class UserService {
    * Flux observable de User
    */
   get user$(): Observable<User> {
+    console.log('user$', this._user);
     return this._user.asObservable();
   }
 

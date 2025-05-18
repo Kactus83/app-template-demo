@@ -21,5 +21,8 @@ export type UserWithRelations = Prisma.UserGetPayload<{
     connectionHistories: true;
     passwordHistories: true;
     authMethodsHistories: true;
+    serviceAccounts: true;
+    preferences: true;
+    profile: true;
   };
 }>;
