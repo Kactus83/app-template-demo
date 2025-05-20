@@ -4,7 +4,6 @@
 # Forcer LF pour certains fichiers .sh
 containers/vault/scripts/entrypoint.sh text eol=lf
 containers/vault/scripts/setup_roles.sh text eol=lf
-containers/vault/scripts/setup_roles.sh text eol=lf
 containers/vault/scripts/setup_vault.sh text eol=lf
 containers/backend/entrypoint.sh text eol=lf
 containers/deployments/scripts/entrypoint.sh text eol=lf
@@ -13,9 +12,8 @@ containers/new-backend/entrypoint.sh text eol=lf
 containers/blockchain/start.sh text eol=lf
 containers/database/entrypoint.sh text eol=lf
 containers/mailhog/scripts/entrypoint.sh text eol=lf
-
 # Forcer CRLF pour d'autres fichiers .sh
 # start.sh text eol=crlf
-
 # Conserver le format d'origine pour tous les autres fichiers
 * -text
+*.zip filter=lfs diff=lfs merge=lfs -text

@@ -9,7 +9,7 @@ import { AppTemplatesModule } from './modules/app-templates/app-templates.module
 @Module({
   imports: [
     RouterModule.register([
-      { path: 'demo/app-templates', module: AppTemplatesModule },
+      { path: 'demo', module: AppTemplatesModule },
     ]),
     AppTemplatesModule,
   ],

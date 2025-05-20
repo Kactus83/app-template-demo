@@ -63,4 +63,23 @@ export class TemplateRepository {
     });
     return rows.map(r => ({ userId: r.userId, count: r.downloadCount }));
   }
+
+  /**
+   * Crée un nouveau template.
+   */
+  async createTemplate(data: {
+    name: string;
+    description?: string | null;
+    filePath: string;
+    size: number;
+  }): Promise<Template> {
+    return this.prisma.template.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        filePath: data.filePath,
+        size: data.size,
+      },
+    });
+  }
 }

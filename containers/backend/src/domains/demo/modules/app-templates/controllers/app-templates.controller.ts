@@ -5,6 +5,13 @@ import {
   Req,
   Res,
   UseGuards,
+  Post,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+  FileInterceptor,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,6 +20,8 @@ import {
   ApiResponse,
   ApiParam,
 } from '@nestjs/swagger';
+import { ROLES } from '../../../../../core/models/decorators/roles.decorator';
+import { UserRole } from '@prisma/client';
 import { AppTemplatesService } from '../services/app-templates.service';
 import { TemplateDto } from '../models/dto/template.dto';
 import { TemplateGlobalStatsDto } from '../models/dto/template-global-stats.dto';
@@ -20,6 +29,7 @@ import { TemplateUserStatsDto } from '../models/dto/template-user-stats.dto';
 import { AuthGuard } from '../../../../../core/guards/auth.guard';
 import type { IAuthenticatedRequest } from '../../../../../core/models/interfaces/authenticated-request.interface';
 import type { Response } from 'express';
+import { CreateTemplateDto } from '../models/dto/create-template.dto';
 
 /**
  * Controller pour l’API Demo CLI – Templates.
@@ -29,7 +39,7 @@ import type { Response } from 'express';
 @ApiTags('App Templates')
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
-@Controller()
+@Controller('app-templates')
 export class AppTemplatesController {
   constructor(private readonly svc: AppTemplatesService) {}
 
@@ -96,5 +106,34 @@ export class AppTemplatesController {
   @ApiResponse({ status: 200, type: [TemplateUserStatsDto] })
   getStatsOne(@Param('id') id: number): Promise<TemplateUserStatsDto[]> {
     return this.svc.getStatsFor(id);
+  }
+
+  /**
+   * Upload d’un template (ZIP).
+   * @param file Fichier ZIP
+   * @param dto DTO de création
+   */
+  @Post()
+  @ROLES(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Créer un nouveau template (admins)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        file: { type: 'string', format: 'binary' },
+      },
+      required: ['name', 'file'],
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiResponse({ status: 201, type: TemplateDto })
+  create(
+    @UploadedFile() file: any, // MulterFile pose des soucis de typage mais c'est pourtant le type réel.
+    @Body() dto: CreateTemplateDto,
+  ): Promise<TemplateDto> {
+    return this.svc.createTemplate(dto, file);
   }
 }
