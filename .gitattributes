@@ -1,6 +1,5 @@
 # Ajouté pour eviter que git n'ecrase le type de fin de ligne lors des commits
 # Git a tendance a convertir les fin de ligne en fonction du systeme d'exploitation
-
 # Forcer LF pour certains fichiers .sh
 containers/vault/scripts/entrypoint.sh text eol=lf
 containers/vault/scripts/setup_roles.sh text eol=lf
