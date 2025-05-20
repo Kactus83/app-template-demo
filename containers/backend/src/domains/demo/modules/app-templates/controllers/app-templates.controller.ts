@@ -9,17 +9,17 @@ import {
   Body,
   UploadedFile,
   UseInterceptors,
-  FileInterceptor,
-  ApiConsumes,
-  ApiBody,
 } from '@nestjs/common';
 import {
-  ApiTags,
   ApiBearerAuth,
+  ApiTags,
   ApiOperation,
   ApiResponse,
+  ApiConsumes,
   ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ROLES } from '../../../../../core/models/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { AppTemplatesService } from '../services/app-templates.service';
