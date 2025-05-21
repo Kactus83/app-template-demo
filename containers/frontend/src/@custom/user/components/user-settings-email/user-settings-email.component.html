@@ -1,0 +1,68 @@
+<div class="w-full max-w-lg mx-auto space-y-6">
+  <h2 class="text-2xl font-bold">Email</h2>
+
+  <!-- Email principal -->
+  <section>
+    <label class="font-medium">Email principal</label>
+    <mat-form-field class="w-full">
+      <mat-label>Nouvel email</mat-label>
+      <input matInput formControlName="newEmail" [formControl]="primaryForm.controls['newEmail']" />
+    </mat-form-field>
+    <div class="flex justify-end">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="changePrimary()"
+        [disabled]="primaryForm.invalid"
+      >
+        Demander changement
+      </button>
+    </div>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <!-- Email secondaire -->
+  <section>
+    <label class="font-medium">Email secondaire</label>
+
+    <!-- Affichage courant -->
+    <div *ngIf="user.secondaryEmail && !editingSecondary" class="flex items-center justify-between">
+      <span>{{ user.secondaryEmail }}</span>
+      <div class="space-x-2">
+        <button mat-icon-button (click)="toggleSecondaryEdit()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteSecondary()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Formulaire édition/ajout -->
+    <form *ngIf="!user.secondaryEmail || editingSecondary" [formGroup]="secondaryForm" (ngSubmit)="saveSecondary()">
+      <mat-form-field class="w-full">
+        <mat-label>Email secondaire</mat-label>
+        <input matInput formControlName="secondaryEmail" />
+      </mat-form-field>
+      <div class="flex justify-end space-x-4">
+        <button mat-stroked-button type="button" (click)="toggleSecondaryEdit()">
+          Annuler
+        </button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="secondaryForm.invalid">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Alertes -->
+  <div *ngIf="showAlert" class="text-center mt-4">
+    <span [ngClass]="{
+      'text-green-600': alertType==='success',
+      'text-red-600':   alertType==='error'
+    }">
+      {{ alertMessage }}
+    </span>
+  </div>
+</div>

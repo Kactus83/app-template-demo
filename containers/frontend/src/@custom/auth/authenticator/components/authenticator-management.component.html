@@ -1,21 +1,24 @@
 <div class="authenticator-management">
-    <div class="header">
-      <h2 class="title">Authenticator Settings</h2>
-    </div>
-    <div *ngIf="loading" class="loading">
-      Loading authenticator status...
-    </div>
-    <div *ngIf="!loading && error" class="error">
-      {{ error }}
-    </div>
-    <div *ngIf="!loading && !error">
-      <!-- Si aucun authenticator n'est configuré, affiche le setup -->
-      <custom-authenticator-setup *ngIf="!hasAuthenticator"></custom-authenticator-setup>
-      <!-- Sinon, affiche le contrôle -->
-      <custom-authenticator-control *ngIf="hasAuthenticator"></custom-authenticator-control>
-    </div>
-    <div class="footer">
-      <a [routerLink]="['/sign-in']" class="back-link">Return to sign in</a>
-    </div>
+  <div class="header">
+    <h2 class="title">Authenticator Settings</h2>
   </div>
-  
+
+  <div *ngIf="loading" class="loading">
+    Loading authenticator status...
+  </div>
+
+  <div *ngIf="!loading && error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- Si aucun authenticator n'est configuré, affiche le setup -->
+    <custom-authenticator-setup *ngIf="!hasAuthenticator"></custom-authenticator-setup>
+    <!-- Sinon, affiche le contrôle -->
+    <custom-authenticator-control *ngIf="hasAuthenticator"></custom-authenticator-control>
+  </div>
+
+  <div class="footer">
+    <a [routerLink]="['/sign-in']" class="back-link">Return to sign in</a>
+  </div>
+</div>

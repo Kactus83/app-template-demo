@@ -39,7 +39,7 @@ import { CreateTemplateDto } from '../models/dto/create-template.dto';
 @ApiTags('App Templates')
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
-@Controller('app-templates')
+@Controller()
 export class AppTemplatesController {
   constructor(private readonly svc: AppTemplatesService) {}
 

@@ -1,0 +1,171 @@
+<div class="max-w-4xl mx-auto prose prose-gray dark:prose-invert p-8 space-y-16">
+
+  <!-- 1. Intro & Contexte -->
+  <section>
+    <h2>App Template : Pull &amp; Structure</h2>
+    <p>
+      Grâce au <code>app-wizard-cli</code>, vous pouvez cloner et initialiser en un seul geste
+      l’ensemble des templates full-stack (dev &amp; prod) packagés en conteneurs Docker,
+      avec leurs scripts Terraform et manifestes d’infrastructure.
+      Le CLI manipule ces templates sans en modifier le cœur, pour préserver la
+      possibilité de mises à jour automatiques.
+    </p>
+    <p class="text-sm text-secondary">
+      Vous gagnez un temps précieux en démarrant toujours à partir d’une base stable,
+      tout en conservant la flexibilité d’y ajouter vos propres modules métier.
+    </p>
+  </section>
+
+  <!-- 2. Utilisation & Bonnes pratiques -->
+  <section>
+    <h3>Utilisation &amp; Bonnes pratiques</h3>
+
+    <h4>Données &amp; Prisma</h4>
+    <ul class="list-inside list-disc">
+      <li>
+        Déclarez vos nouveaux modèles <code>schema.prisma</code> <strong>à côté</strong> des modèles existants,
+        sans modifier le schéma généré.
+      </li>
+      <li>
+        Exécutez <code>npx prisma migrate dev</code> puis
+        <code>npx prisma generate</code> pour appliquer la migration
+        et régénérer les types TypeScript.
+      </li>
+      <li>
+        Réutilisez ces types TS côté backend et frontend pour garantir la cohérence.
+      </li>
+    </ul>
+
+    <h4>Backend (NestJS) : Core &amp; Domaines</h4>
+    <ul class="list-inside list-disc">
+      <li>
+        <strong>Core</strong> : configuration, Vault, logging (Winston &amp; Sentry),
+        validation, Swagger, sécurité, injection de secrets.  
+        API stables, peu sujettes à modifications.
+      </li>
+      <li>
+        <strong>Domaines</strong> : modules isolés (Auth, Communication, App, Web3…).
+        Créez votre propre dossier sous <code>src/domains/</code> pour vos fonctionnalités,
+        sans toucher aux domaines existants.
+      </li>
+      <li>
+        <em>(Bientôt)</em> : flags de configuration pour activer/désactiver
+        un domaine sans modifier le template.
+      </li>
+    </ul>
+
+    <h4>Frontend (Angular &amp; Fuse + &#64;custom)</h4>
+    <ul class="list-inside list-disc">
+      <li>
+        Le cœur <code>&#64;fuse</code> reste intact pour profiter des mises à jour officielles.
+      </li>
+      <li>
+        Vos extensions métier résident dans <code>&#64;custom/</code> et
+        dans <code>app/modules/</code>, sous forme de modules autonomes.
+      </li>
+      <li>
+        Pour ajouter une feature, créez un module, déclarez ses routes
+        dans <code>app.routes.ts</code>, et importez-le : aucune autre
+        modification de la base n’est requise.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 3. Tech Stack -->
+  <section>
+    <h3>Détail des conteneurs &amp; Tech Stack</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <div>
+        <h4>🖥 Frontend</h4>
+        <ul class="list-inside list-disc">
+          <li>Multi-stage build : Angular → Nginx Alpine.</li>
+          <li>Transloco, Tailwind CSS, tests Jest &amp; Angular Testing Library.</li>
+          <li>Volumes partagés pour healthchecks et artefacts.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>⚙️ Backend</h4>
+        <ul class="list-inside list-disc">
+          <li>Builder (node:18-alpine) → runtime (node:18-slim + openssl).</li>
+          <li>Entrypoint : Vault init/unseal → migrations Prisma → NestJS.</li>
+          <li>Swagger auto-généré, CORS restreint, logging centralisé.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>🔐 Vault</h4>
+        <ul class="list-inside list-disc">
+          <li>AppRole, KV v2, auto-unseal, scripts d’injection.</li>
+          <li>Volume persistant <code>dev-deployments/vault</code>.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>⛓ Blockchain</h4>
+        <ul class="list-inside list-disc">
+          <li>Hardhat + TypeChain, contrats ERC-20/721, MultiVault, TokenSale.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>🗄 Postgres &amp; MailHog</h4>
+        <ul class="list-inside list-disc">
+          <li>Postgres + migrations Prisma automatiques.</li>
+          <li>MailHog dev (<code>mailhog/initialized</code>).</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>🌐 Infra-as-Code</h4>
+        <ul class="list-inside list-disc">
+          <li>
+            Terraform pour AWS RDS, ECR, App Runner ou GCP
+            (dossier <code>infra/</code>).
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. Domaines exportés & services utiles -->
+  <section>
+    <h3>Domaines exportés &amp; Services utiles</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- App Domain -->
+      <fuse-card class="p-4">
+        <h4 class="font-semibold mb-2">App Domain</h4>
+        <p class="text-sm mb-3">
+          Services de navigation &amp; UI partagée :
+        </p>
+        <ul class="list-inside list-disc text-sm mb-3">
+          <li><code>NavigationService.registerItem(item: NavItem)</code></li>
+          <li><code>NavigationService.getCurrent()</code></li>
+        </ul>
+        <pre ngNonBindable class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-xs"><code>import &#123; NavigationService &#125; from '&#64;custom/app';
+navigationService.registerItem(&#123; id: 'feat', title: 'Feature', link: '/feat' &#125;);
+        </code></pre>
+      </fuse-card>
+
+      <!-- Communication Domain -->
+      <fuse-card class="p-4">
+        <h4 class="font-semibold mb-2">Communication Domain</h4>
+        <p class="text-sm mb-3">
+          Envoi de messages &amp; notifications inter-domaines :
+        </p>
+        <ul class="list-inside list-disc text-sm mb-3">
+          <li><code>NotificationService.send(type, message)</code></li>
+          <li><code>MessagingService.onEvent(event)</code></li>
+        </ul>
+        <pre ngNonBindable class="bg-gray-100 dark:bg-gray-700 p-2 rounded text-xs"><code>import &#123; NotificationService &#125; from '&#64;custom/communication';
+notificationService.send('success', 'Opération réussie');
+        </code></pre>
+      </fuse-card>
+
+    </div>
+  </section>
+
+</div>

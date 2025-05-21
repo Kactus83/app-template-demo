@@ -1,23 +1,4 @@
 /**
- * Données de l’utilisateur principal
- */
-export interface UserDto {
-  id: number;
-  email: string | null;
-  username: string | null;
-  isEmailVerified: boolean;
-  secondaryEmail: string | null;
-  isSecondaryEmailVerified: boolean;
-  firstName: string | null;
-  lastName: string | null;
-  avatar: string | null;
-  status: string | null;
-  roles: string[];
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-}
-
-/**
  * Payload pour PATCH /users/me
  */
 export interface UpdateUserDto {

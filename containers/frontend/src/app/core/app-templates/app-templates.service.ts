@@ -15,7 +15,7 @@ import { environment } from '../../../../environment';
 @Injectable({ providedIn: 'root' })
 export class AppTemplatesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/demo/app-templates`;
+  private readonly baseUrl = `${environment.apiUrl}/app-templates`;
 
   // ---------------------------------------------------------------------------------------------------
   // @ Public methods

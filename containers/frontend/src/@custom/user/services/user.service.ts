@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
 
 import {
-  UserDto,
   UpdateUserDto,
   UserPreferencesDto,
   UpdateUserPreferencesDto,
   UserProfileDto,
   UpdateUserProfileDto,
 } from '@custom/user/models/dto/user.dto';
+import { UserDto } from '@custom/common/models/dto/user.dto';
 
 @Injectable({
   providedIn: 'root',

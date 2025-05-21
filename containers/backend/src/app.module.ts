@@ -10,6 +10,7 @@ import { SearchDomain } from './domains/search/search.domain';
 import { Web3Domain } from './domains/web3/web3.domain';
 import { VersionCheckMiddleware } from './domains/app/modules/version/middlewares/version-check.middleware';
 import { MetadataMiddleware } from './core/middlewares/metadata.middleware';
+import { DemoDomain } from './domains/demo/demo.domain';
 
 /**
  * @module AppModule
@@ -30,6 +31,7 @@ import { MetadataMiddleware } from './core/middlewares/metadata.middleware';
     CommunicationDomain,
     UserManagementDomain,
     SearchDomain,
+    DemoDomain,
   ],
 })
 export class AppModule implements NestModule {

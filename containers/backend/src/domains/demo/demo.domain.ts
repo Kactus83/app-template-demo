@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 import { AppTemplatesModule } from './modules/app-templates/app-templates.module';
+import { AppWizardModule } from './modules/app-wizard/app-wizard-module';
 
 /**
  * @domain DemoDomain
@@ -9,9 +10,11 @@ import { AppTemplatesModule } from './modules/app-templates/app-templates.module
 @Module({
   imports: [
     RouterModule.register([
-      { path: 'demo', module: AppTemplatesModule },
+      { path: 'app-templates', module: AppTemplatesModule },
+      { path: 'wizard', module: AppWizardModule },
     ]),
     AppTemplatesModule,
+    AppWizardModule,
   ],
 })
 export class DemoDomain {}

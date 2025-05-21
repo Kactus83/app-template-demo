@@ -13,6 +13,9 @@ COPY .prettierrc ./
 COPY typedoc.json ./
 COPY README.md ./
 
+# Copier les fichiers statiques (zip des templates, etc.)
+COPY public ./public
+
 # Installer les dépendances
 # Legacy-peer-deps est utilisé pour résoudre les problèmes de dépendances
 # entre les packages @sentry/node et winston sentry.
@@ -55,6 +58,9 @@ COPY --from=builder /app/deployments/docs ./docs
 
 # Copier l'application construite, le client Prisma et le script d'entrée
 COPY --from=builder /app/dist ./dist
+
+# Copier les assets (templates ZIP)
+COPY --from=builder /app/public ./public
 
 # Copier le script d'entrée
 COPY --from=builder /app/prod-entrypoint.sh ./prod-entrypoint.sh

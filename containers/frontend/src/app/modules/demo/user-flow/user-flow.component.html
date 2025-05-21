@@ -1,0 +1,21 @@
+<div class="flex flex-col items-center p-8 space-y-12">
+  <!-- Titre -->
+  <h2 class="text-3xl font-bold">Parcours Utilisateur</h2>
+
+  <!-- Cercles des étapes -->
+  <div class="grid grid-cols-7 gap-8">
+    <ng-container *ngFor="let step of steps">
+      <a
+        [routerLink]="step.link"
+        class="flex flex-col items-center space-y-2 hover:opacity-80 transition-opacity"
+      >
+        <div
+          class="h-16 w-16 flex items-center justify-center rounded-full bg-primary text-on-primary shadow-lg hover:shadow-xl transition-shadow"
+        >
+          <mat-icon [svgIcon]="step.icon" class="icon-size-6"></mat-icon>
+        </div>
+        <span class="text-center text-sm">{{ step.label }}</span>
+      </a>
+    </ng-container>
+  </div>
+</div>

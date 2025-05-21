@@ -1,24 +1,60 @@
-<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  <ng-container *ngIf="templates$ | async as templates; else noData">
-    <ng-container *ngFor="let tpl of templates">
-      <fuse-card class="flex flex-col p-6">
-        <!-- Titre -->
-        <div class="text-xl font-semibold mb-2">{{ tpl.name }}</div>
-        <!-- Description (facultative) -->
-        <div class="text-secondary mb-4" *ngIf="tpl.description">
-          {{ tpl.description }}
-        </div>
-        <!-- Bouton de téléchargement -->
-        <button mat-flat-button color="primary" (click)="download(tpl)">
-          <mat-icon class="mr-2">cloud_download</mat-icon>
-          Télécharger
-        </button>
-      </fuse-card>
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <!-- Titre -->
+  <h2 class="text-2xl font-bold text-center mb-2">
+    Templates CLI disponibles
+  </h2>
+
+  <!-- Résumé global -->
+  <div
+    *ngIf="totalDownloads$ | async as total"
+    class="text-center text-sm text-gray-600 dark:text-gray-400 mb-6"
+  >
+    Total téléchargements : {{ total }}
+  </div>
+
+  <!-- Grille de cartes -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <ng-container *ngIf="templatesWithStats$ | async as items; else loading">
+      <ng-container *ngIf="items.length > 0; else noData">
+        <ng-container *ngFor="let item of items">
+          <fuse-card class="flex flex-col justify-between p-6">
+            <div>
+              <div class="text-xl font-semibold mb-1">
+                {{ item.tpl.name }}
+              </div>
+              <div class="text-secondary mb-2" *ngIf="item.tpl.description">
+                {{ item.tpl.description }}
+              </div>
+              <div class="text-sm text-gray-500 mb-4">
+                Téléchargements : {{ item.total }}
+              </div>
+            </div>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="download(item.tpl)"
+              class="self-start mt-auto"
+            >
+              <mat-icon class="mr-2">cloud_download</mat-icon>
+              Télécharger
+            </button>
+          </fuse-card>
+        </ng-container>
+      </ng-container>
     </ng-container>
-  </ng-container>
+  </div>
+
+  <!-- Pas de données -->
   <ng-template #noData>
-    <div class="text-center text-secondary col-span-full">
+    <div class="text-center text-secondary mt-6">
       Aucun template disponible.
+    </div>
+  </ng-template>
+
+  <!-- Chargement -->
+  <ng-template #loading>
+    <div class="text-center text-secondary mt-6">
+      Chargement…
     </div>
   </ng-template>
 </div>

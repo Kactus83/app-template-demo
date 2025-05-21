@@ -1,0 +1,304 @@
+<div class="relative flex min-w-0 flex-auto flex-col overflow-hidden">
+    <!-- Intro Context -->
+    <div class="bg-white dark:bg-gray-800 px-6 py-12 sm:px-16 sm:py-16">
+        <div class="max-w-3xl mx-auto text-lg text-secondary space-y-4">
+            <p>
+                Le projet “App-Template” est le fruit de plus de cinq années de réflexions et d’itérations personnelles, nées de la
+                volonté partagée par tout développeur : mettre en place un environnement stable, répliquer un même projet et déployer
+                automatiquement sans perdre de temps à configurer chaque dépendance.
+            </p>
+            <p>
+                À l’origine, il était nommé « Auth-Boilerplate » et avait pour but premier de mettre les bases d’une authentification
+                solide et adaptée à tout projet. Plusieurs premières versions avaient vu le jour sous Express.js, calquées sur la
+                méthode employée pour “The Idlesaur”. Certaines se sont heurtées à des choix d’architectures ou de technologies trop
+                complexes pour que je puisse les maîtriser à l’époque, d’autres ont mis en évidence des erreurs fondamentales qui ont
+                nécessité des refontes. À titre d’exemple, une des premières versions intégrait Consul (de Hashicorp) comme service
+                mesh, qui devait permettre la découverte des microservices entre eux, la rotation de certificats SSL, etc., mais j’ai
+                rapidement dû abandonner ce choix car aucune des tentatives n’a jamais correctement fonctionné. À mon entrée en BTS,
+                j’ai profité de l’occasion pour refondre complètement le backend en utilisant NestJS pour gagner en modularité et en
+                qualité de code, toujours associé à un frontend Angular basé sur Fuse (que j’avais moi-même recomposé).
+            </p>
+            <p>
+                Lors de la montée de version majeure d’Angular (v20) et de Fuse (v20), j’ai saisi l’opportunité pour réécrire le front
+                non plus en forkant Fuse, mais en construisant un module additionnel par-dessus, afin d’assurer pérennité et
+                maintenabilité. Dans la foulée du BTS et pour répondre aux attendus d’automatisation de l’environnement, j’ai
+                développé un wizard desktop en Rust/Tauri, destiné à installer et configurer en un clic tous les outils requis (Docker
+                Desktop, AWS CLI, Terraform, etc.). Le CLI JavaScript est venu ensuite pour donner une cohérence : l’idée était qu’en
+                deux commandes (`appwizard create` puis `appwizard setup`), on puisse reproduire intégralement le template, en local
+                comme en production.
+            </p>
+        </div>
+    </div>
+
+    <!-- Header & Cards -->
+    <div
+        class="relative overflow-hidden px-6 pb-12 pt-8 sm:px-16 sm:pb-24 sm:pt-20"
+    >
+        <!-- Background SVG -->
+        <!-- prettier-ignore -->
+        <svg class="-z-1 absolute inset-0"
+             viewBox="0 0 960 540" width="100%" height="100%" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+            <g class="opacity-40 text-gray-200 dark:text-gray-800" fill="none" stroke="currentColor" stroke-width="100">
+                <circle r="234" cx="196" cy="23"></circle>
+                <circle r="234" cx="790" cy="491"></circle>
+            </g>
+        </svg>
+
+        <!-- Header -->
+        <div class="flex flex-col items-center">
+            <h2 class="text-xl font-semibold">APP TEMPLATE</h2>
+            <div
+                class="mt-1 text-center text-4xl font-extrabold leading-tight tracking-tight sm:text-7xl"
+            >
+                Boostez votre workflow de développement
+            </div>
+            <div
+                class="text-secondary mt-3 text-center tracking-tight sm:text-2xl"
+            >
+                <div>Templates modulaires, automatisation CLI et wizard de setup.</div>
+                <div>Tout ce qu’il faut pour lancer et déployer vos apps en quelques minutes.</div>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="mt-10 flex justify-center sm:mt-20">
+            <div class="w-full max-w-sm md:max-w-7xl">
+                <div
+                    class="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-6 lg:grid-cols-3 lg:gap-y-0"
+                >
+                    <!-- CLI Tool Card -->
+                    <fuse-card class="max-w-sm flex-col p-6 sm:px-10 sm:py-12 md:max-w-none">
+                        <div class="text-4xl font-bold leading-tight tracking-tight">
+                            CLI Tool
+                        </div>
+                        <div class="text-secondary mt-2 text-lg font-medium tracking-tight">
+                            Automatisez la création, le lancement et le déploiement de vos projets d’un seul commandement.
+                        </div>
+                        <div class="my-10 h-1 w-8 rounded bg-accent"></div>
+                        <div class="flex items-baseline whitespace-nowrap">
+                            <div class="text-6xl font-semibold leading-tight tracking-tight">
+                                Free
+                            </div>
+                        </div>
+                        <button
+                            class="fuse-mat-button-large mt-10"
+                            mat-flat-button
+                            [color]="'primary'"
+                        >
+                            Essayer maintenant
+                        </button>
+                        <div class="mt-12 flex flex-col">
+                            <div class="font-semibold">Au programme :</div>
+                            <div class="mt-4 space-y-2">
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">create / dev-run / deploy</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Initialisation du template</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Gestion sécurisée des credentials</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Intégration Git & Docker</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fuse-card>
+
+                    <!-- App Template Card -->
+                    <fuse-card class="max-w-sm flex-col ring-2 ring-primary p-6 sm:px-10 sm:py-12 md:max-w-none">
+                        <div class="text-4xl font-bold leading-tight tracking-tight">
+                            App Template
+                        </div>
+                        <div class="text-secondary mt-2 text-lg font-medium tracking-tight">
+                            Un squelette full-stack (Angular + NestJS) prêt à l’emploi.
+                        </div>
+                        <div class="my-10 h-1 w-8 rounded bg-accent"></div>
+                        <div class="flex items-baseline whitespace-nowrap">
+                            <div class="text-6xl font-semibold leading-tight tracking-tight">
+                                Free
+                            </div>
+                        </div>
+                        <button
+                            class="fuse-mat-button-large mt-10"
+                            mat-stroked-button
+                            [color]="'primary'"
+                        >
+                            Découvrir le code
+                        </button>
+                        <div class="mt-12 flex flex-col">
+                            <div class="font-semibold">Inclus :</div>
+                            <div class="mt-4 space-y-2">
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Angular 16 + Tailwind</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">NestJS + Prisma</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Docker Compose (dev)</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">I18n, tests & monitoring</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fuse-card>
+
+                    <!-- Setup Wizard Card -->
+                    <fuse-card class="max-w-sm flex-col p-6 sm:px-10 sm:py-12 md:max-w-none">
+                        <div class="text-4xl font-bold leading-tight tracking-tight">
+                            Setup Wizard
+                        </div>
+                        <div class="text-secondary mt-2 text-lg font-medium tracking-tight">
+                            Installez et configurez en un clic (Docker, AWS CLI, Terraform…).
+                        </div>
+                        <div class="my-10 h-1 w-8 rounded bg-accent"></div>
+                        <div class="flex items-baseline whitespace-nowrap">
+                            <div class="text-6xl font-semibold leading-tight tracking-tight">
+                                Free
+                            </div>
+                        </div>
+                        <button
+                            class="fuse-mat-button-large mt-10"
+                            mat-flat-button
+                            [color]="'primary'"
+                        >
+                            Lancer le wizard
+                        </button>
+                        <div class="mt-12 flex flex-col">
+                            <div class="font-semibold">Points forts :</div>
+                            <div class="mt-4 space-y-2">
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Diagnostics OS & prérequis</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Correctifs automatiques</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">Win/macOS/Linux</div>
+                                </div>
+                                <div class="flex">
+                                    <mat-icon
+                                        class="text-green-600 icon-size-5"
+                                        [svgIcon]="'heroicons_solid:check'"
+                                    ></mat-icon>
+                                    <div class="ml-2 leading-5">UI Angular + Rust</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fuse-card>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Highlights -->
+    <div
+        class="flex flex-col items-center bg-white px-6 py-10 dark:bg-gray-800 sm:px-16 sm:pb-20 sm:pt-18"
+    >
+        <div class="w-full max-w-7xl">
+            <div>
+                <div class="text-4xl font-extrabold leading-tight tracking-tight">
+                    Tout ce qu’il faut pour démarrer efficacement
+                </div>
+                <div class="text-secondary mt-2 max-w-xl text-xl">
+                    Du bootstrap initial à la mise en production, gagnez du temps grâce à nos outils intégrés.
+                </div>
+            </div>
+            <div
+                class="mt-12 grid w-full grid-cols-1 gap-x-6 gap-y-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3 lg:gap-16"
+            >
+                <div>
+                    <span class="flex h-12 w-12 items-center justify-center rounded bg-primary">
+                        <mat-icon class="text-white" [svgIcon]="'heroicons_outline:code'"></mat-icon>
+                    </span>
+                    <div class="mt-4 text-xl font-medium">Génération de projet</div>
+                    <div class="text-secondary mt-2 leading-6">
+                        Structure modulaire ready-to-use, respectant SOLID et best practices.
+                    </div>
+                </div>
+                <div>
+                    <span class="flex h-12 w-12 items-center justify-center rounded bg-primary">
+                        <mat-icon class="text-white" [svgIcon]="'heroicons_outline:terminal'"></mat-icon>
+                    </span>
+                    <div class="mt-4 text-xl font-medium">Automatisation CLI</div>
+                    <div class="text-secondary mt-2 leading-6">
+                        Commandes pour créer, lancer et déployer sans effort.
+                    </div>
+                </div>
+                <div>
+                    <span class="flex h-12 w-12 items-center justify-center rounded bg-primary">
+                        <mat-icon class="text-white" [svgIcon]="'heroicons_outline:adjustments'"></mat-icon>
+                    </span>
+                    <div class="mt-4 text-xl font-medium">Configuration guidée</div>
+                    <div class="text-secondary mt-2 leading-6">
+                        Wizard interactif pour installer et configurer votre environnement.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final CTA -->
+    <div
+        class="bg-primary-600 px-6 py-10 text-on-primary-600 sm:px-16 sm:py-12"
+    >
+        <div class="mx-auto flex w-full max-w-7xl flex-col items-center text-center">
+            <div class="text-3xl font-extrabold leading-6 sm:text-4xl sm:text-5xl sm:leading-10">
+                Prêt à booster vos projets ?
+            </div>
+            <button
+                mat-flat-button
+                class="fuse-mat-button-large mt-8 bg-white px-12 text-primary-800"
+            >
+                <span class="text-lg">Commencer Gratuitement</span>
+            </button>
+        </div>
+    </div>
+</div>

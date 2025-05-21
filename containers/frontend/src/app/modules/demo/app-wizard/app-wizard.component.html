@@ -1,0 +1,46 @@
+<div class="mx-auto max-w-xl px-4 py-8">
+  <div class="flex flex-col items-center space-y-6">
+    <!-- Badge Bêta -->
+    <span
+      class="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold uppercase"
+    >
+      Bêta
+    </span>
+
+    <!-- Titre -->
+    <h2 class="text-3xl font-extrabold text-center">
+      Assistant d’installation
+    </h2>
+
+    <!-- Description courte -->
+    <p class="text-lg text-gray-700 dark:text-gray-300 text-center">
+      Simplifiez l’installation et la configuration de votre environnement
+      de développement : Node.js, npm, GitHub CLI, Docker Desktop…  
+      Le tout via une interface graphique intégrée.
+    </p>
+
+    <!-- Note de disponibilité et de maturité -->
+    <p class="text-sm text-gray-600 dark:text-gray-400 text-center max-w-prose">
+      Disponible pour l’instant uniquement sous Windows 10 et versions
+      ultérieures embarquant WebView (basé sur Tauri).  
+      Cet assistant est en phase bêta : il peut rencontrer des difficultés
+      de détection selon vos permissions ou votre configuration.  
+      Nous travaillons activement à son amélioration et à son
+      portage sur macOS/Linux.
+    </p>
+
+    <!-- Bouton de téléchargement -->
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="download()"
+      [disabled]="downloading"
+      class="mt-4 flex items-center"
+    >
+      <mat-icon class="mr-2">
+        {{ downloading ? 'hourglass_top' : 'download' }}
+      </mat-icon>
+      {{ downloading ? 'Téléchargement en cours…' : 'Télécharger le Wizard' }}
+    </button>
+  </div>
+</div>
