@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, instanceToPlain } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { JwtPayloadDto } from '../models/dto/jwt-payload.dto';
 import { JwtServiceAccountPayloadDto } from '../models/dto/jwt-service-account-payload.dto';
@@ -41,7 +41,8 @@ export class JwtUtilityService {
     if (errors.length) {
       throw new Error(`Invalid user JWT payload: ${errors}`);
     }
-    return this.doSign(payload, subject);
+    const plain = instanceToPlain(instance);
+    return this.doSign(plain, subject);
   }
 
   /**
@@ -56,7 +57,8 @@ export class JwtUtilityService {
     if (errors.length) {
       throw new Error(`Invalid ServiceAccount JWT payload: ${errors}`);
     }
-    return this.doSign(payload, AuthSubject.SERVICE_ACCOUNT);
+    const plain = instanceToPlain(instance);
+    return this.doSign(plain, AuthSubject.SERVICE_ACCOUNT);
   }
 
   /**
@@ -71,7 +73,8 @@ export class JwtUtilityService {
     if (errors.length) {
       throw new Error(`Invalid MFA JWT payload: ${errors}`);
     }
-    return this.doSign(payload, AuthSubject.MFA);
+    const plain = instanceToPlain(instance);
+    return this.doSign(plain, AuthSubject.MFA);
   }
 
   /**

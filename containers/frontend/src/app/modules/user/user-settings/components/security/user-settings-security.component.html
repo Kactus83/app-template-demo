@@ -1,59 +1,41 @@
-<div class="flex min-w-0 flex-auto flex-col">
+<div class="flex h-full w-full flex-col">
   <div class="flex-auto p-6 sm:p-10">
+
     <!-- Menu des onglets -->
-    <nav class="mb-4">
-      <ul class="flex space-x-4">
-        <li>
+    <nav class="border-b border-gray-200 dark:border-gray-700 mb-6">
+      <ul class="flex -mb-px">
+        <li *ngFor="let tab of tabs">
           <button
-            (click)="setActiveTab('email')"
-            [class.font-bold]="activeTab === 'email'"
-            class="hover:underline focus:outline-none"
+            (click)="setActiveTab(tab.key)"
+            class="inline-flex items-center gap-2 py-2 px-4 border-b-2 font-medium transition-colors"
+            [ngClass]="{
+              'border-primary-500 text-primary-600': activeTab === tab.key,
+              'border-transparent text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200':
+                activeTab !== tab.key
+            }"
           >
-            Email
-          </button>
-        </li>
-        <li>
-          <button
-            (click)="setActiveTab('phone')"
-            [class.font-bold]="activeTab === 'phone'"
-            class="hover:underline focus:outline-none"
-          >
-            Phone
-          </button>
-        </li>
-        <li>
-          <button
-            (click)="setActiveTab('authenticator')"
-            [class.font-bold]="activeTab === 'authenticator'"
-            class="hover:underline focus:outline-none"
-          >
-            Authenticator
-          </button>
-        </li>
-        <li>
-          <button
-            (click)="setActiveTab('serviceAccounts')"
-            [class.font-bold]="activeTab === 'serviceAccounts'"
-            class="hover:underline focus:outline-none"
-          >
-            Service Accounts
+            <mat-icon [svgIcon]="tab.icon" class="icon-size-5"></mat-icon>
+            {{ tab.label }}
           </button>
         </li>
       </ul>
     </nav>
 
     <!-- Contenu de l’onglet -->
-    <div *ngIf="activeTab === 'email'">
-      <user-settings-email></user-settings-email>
-    </div>
-    <div *ngIf="activeTab === 'phone'">
-      <custom-phone-management></custom-phone-management>
-    </div>
-    <div *ngIf="activeTab === 'authenticator'">
-      <custom-authenticator-management></custom-authenticator-management>
-    </div>
-    <div *ngIf="activeTab === 'serviceAccounts'">
-      <service-accounts-management></service-accounts-management>
-    </div>
+    <ng-container [ngSwitch]="activeTab">
+      <user-settings-email
+        *ngSwitchCase="'email'"
+      ></user-settings-email>
+      <custom-phone-management
+        *ngSwitchCase="'phone'"
+      ></custom-phone-management>
+      <custom-authenticator-management
+        *ngSwitchCase="'authenticator'"
+      ></custom-authenticator-management>
+      <custom-service-accounts-management
+        *ngSwitchCase="'serviceAccounts'"
+      ></custom-service-accounts-management>
+    </ng-container>
+
   </div>
 </div>

@@ -32,7 +32,7 @@ export class SecondaryEmailService {
    */
   addSecondaryEmail(secondaryEmail: string): Observable<{ message: string; user: UserDto }> {
     const dto: AddSecondaryEmailDto = { secondaryEmail };
-    return this.http.post<{ message: string; user: UserDto }>(`${this.baseUrl}/auth/add-secondary-email`, dto);
+    return this.http.post<{ message: string; user: UserDto }>(`${this.baseUrl}/auth/email/add-secondary-email`, dto);
   }
 
   /**
@@ -40,7 +40,7 @@ export class SecondaryEmailService {
    * @returns Un Observable émettant un objet contenant un message et le UserDto mis à jour.
    */
   deleteSecondaryEmail(): Observable<{ message: string; user: UserDto }> {
-    return this.http.post<{ message: string; user: UserDto }>(`${this.baseUrl}/auth/delete-secondary-email`, {});
+    return this.http.post<{ message: string; user: UserDto }>(`${this.baseUrl}/auth/email/delete-secondary-email`, {});
   }
 
   /**
@@ -50,6 +50,6 @@ export class SecondaryEmailService {
    */
   confirmSecondaryEmailDeletion(token: string): Observable<{ message: string }> {
     const dto: ConfirmSecondaryEmailDeletionDto = { token };
-    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/confirm-secondary-email-change`, dto);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/email/confirm-secondary-email-change`, dto);
   }
 }

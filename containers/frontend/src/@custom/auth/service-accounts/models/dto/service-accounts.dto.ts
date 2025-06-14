@@ -91,8 +91,7 @@ export interface ServiceAccountDto {
 /**
  * Réponse de la création d’un Service Account, inclut le secret brut.
  */
-export interface CreateServiceAccountResponseDto
-  extends ServiceAccountDto {
+export interface CreateServiceAccountResponseDto extends ServiceAccountDto {
   /** Secret généré à transmettre une seule fois */
   secret: string;
 }

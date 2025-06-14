@@ -34,6 +34,7 @@ import { ServicesAccountsModule } from './modules/services-accounts/services-acc
       { path: 'auth/services-accounts', module: ServicesAccountsModule },
     ]),
     ClassicAuthModule,
+    ServicesAccountsModule,
     Web3Module,
     AuthenticatorModule,
     PhoneModule,

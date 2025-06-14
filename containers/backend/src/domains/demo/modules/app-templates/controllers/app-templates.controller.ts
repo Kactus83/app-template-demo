@@ -3,12 +3,13 @@ import {
   Get,
   Param,
   Req,
-  Res,
   UseGuards,
   Post,
   Body,
   UploadedFile,
   UseInterceptors,
+  ParseIntPipe,
+  StreamableFile,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -28,7 +29,6 @@ import { TemplateGlobalStatsDto } from '../models/dto/template-global-stats.dto'
 import { TemplateUserStatsDto } from '../models/dto/template-user-stats.dto';
 import { AuthGuard } from '../../../../../core/guards/auth.guard';
 import type { IAuthenticatedRequest } from '../../../../../core/models/interfaces/authenticated-request.interface';
-import type { Response } from 'express';
 import { CreateTemplateDto } from '../models/dto/create-template.dto';
 
 /**
@@ -41,7 +41,7 @@ import { CreateTemplateDto } from '../models/dto/create-template.dto';
 @UseGuards(AuthGuard)
 @Controller()
 export class AppTemplatesController {
-  constructor(private readonly svc: AppTemplatesService) {}
+  constructor(private readonly appTemplateService: AppTemplatesService) {}
 
   /**
    * Liste *tous* les templates.
@@ -50,7 +50,7 @@ export class AppTemplatesController {
   @ApiOperation({ summary: 'Liste de tous les templates' })
   @ApiResponse({ status: 200, type: [TemplateDto] })
   listAll(): Promise<TemplateDto[]> {
-    return this.svc.listTemplates();
+    return this.appTemplateService.listTemplates();
   }
 
   /**
@@ -60,30 +60,29 @@ export class AppTemplatesController {
   @ApiOperation({ summary: 'Templates de l’utilisateur actif' })
   @ApiResponse({ status: 200, type: [TemplateDto] })
   listMine(@Req() req: IAuthenticatedRequest): Promise<TemplateDto[]> {
-    return this.svc.listUserTemplates(req.user.id);
+    return this.appTemplateService.listUserTemplates(req.user.id);
   }
 
   /**
    * Téléchargement d’un template (ZIP).
    * Incrémente le compteur même si le template n’est pas « attribué ».
-   * @param id ID interne du template
    */
   @Get(':id/download')
   @ApiParam({ name: 'id', example: 1, description: 'ID du template' })
   @ApiOperation({ summary: 'Télécharger le ZIP d’un template' })
   @ApiResponse({ status: 200, description: 'Flux binaire ZIP' })
   async download(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Req() req: IAuthenticatedRequest,
-    @Res() res: Response,
-  ) {
-    const file = await this.svc.getTemplateFile(req.user.id, id);
-    res.set({
-      'Content-Type': 'application/zip',
-      'Content-Disposition': `attachment; filename="${file.fileName}"`,
-      'Content-Length': file.size,
+  ): Promise<StreamableFile> {
+    const { stream, size, fileName } =
+      await this.appTemplateService.getTemplateFile(req.user.id, id);
+
+    return new StreamableFile(stream, {
+      type: 'application/zip',
+      disposition: `attachment; filename="${fileName}"`,
+      length: size,
     });
-    return file.stream.pipe(res);
   }
 
   /**
@@ -93,7 +92,7 @@ export class AppTemplatesController {
   @ApiOperation({ summary: 'Stats téléchargements – tous templates' })
   @ApiResponse({ status: 200, type: [TemplateGlobalStatsDto] })
   getAllStats(): Promise<TemplateGlobalStatsDto[]> {
-    return this.svc.getAllStats();
+    return this.appTemplateService.getAllStats();
   }
 
   /**
@@ -104,8 +103,10 @@ export class AppTemplatesController {
   @ApiParam({ name: 'id', example: 1, description: 'ID du template' })
   @ApiOperation({ summary: 'Stats user ↔ template' })
   @ApiResponse({ status: 200, type: [TemplateUserStatsDto] })
-  getStatsOne(@Param('id') id: number): Promise<TemplateUserStatsDto[]> {
-    return this.svc.getStatsFor(id);
+  getStatsOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<TemplateUserStatsDto[]> {
+    return this.appTemplateService.getStatsFor(id);
   }
 
   /**
@@ -131,9 +132,9 @@ export class AppTemplatesController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiResponse({ status: 201, type: TemplateDto })
   create(
-    @UploadedFile() file: any, // MulterFile pose des soucis de typage mais c'est pourtant le type réel.
+    @UploadedFile() file: any,  // Devrait être `Express.Multer.File` mais l'import ne fonctionne pas (à corriger)
     @Body() dto: CreateTemplateDto,
   ): Promise<TemplateDto> {
-    return this.svc.createTemplate(dto, file);
+    return this.appTemplateService.createTemplate(dto, file);
   }
 }

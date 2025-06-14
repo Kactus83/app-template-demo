@@ -19,7 +19,6 @@ export class UserServiceAccountRepository {
   async create(data: {
     userId: number;
     name: string;
-    clientId: string;
     clientSecretHash: string;
     validFrom?: Date;
     validTo?: Date | null;
@@ -29,7 +28,6 @@ export class UserServiceAccountRepository {
       data: {
         userId: data.userId,
         name: data.name,
-        clientId: data.clientId,
         clientSecret: data.clientSecretHash,
         validFrom: data.validFrom ?? undefined,
         validTo: data.validTo ?? null,

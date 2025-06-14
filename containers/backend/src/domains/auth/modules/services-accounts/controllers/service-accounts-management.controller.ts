@@ -30,7 +30,7 @@ import { CreateServiceAccountResponseDto } from '../models/dto/create-service-ac
    * Routes protégées par JWT utilisateur.
    * @category Domains/Auth
    */
-  @ApiTags('Service Accounts')
+  @ApiTags('AUTH - Service Accounts')
   @Controller('')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()

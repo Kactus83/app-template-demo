@@ -64,21 +64,26 @@ export class TemplateRepository {
     return rows.map(r => ({ userId: r.userId, count: r.downloadCount }));
   }
 
+
   /**
    * Crée un nouveau template.
+   * @param data Données du template à persister, 
+   *             incluant la clé interne (filePath) et l’URL publique (publicUrl).
    */
   async createTemplate(data: {
     name: string;
     description?: string | null;
     filePath: string;
+    publicUrl: string;
     size: number;
   }): Promise<Template> {
     return this.prisma.template.create({
       data: {
-        name: data.name,
+        name:        data.name,
         description: data.description,
-        filePath: data.filePath,
-        size: data.size,
+        filePath:    data.filePath,
+        publicUrl:   data.publicUrl,
+        size:        data.size,
       },
     });
   }

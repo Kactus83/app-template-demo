@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,9 +11,7 @@ import { AuthenticatorDto } from '../models/dto/authenticator.dto';
 
 /**
  * @component AuthenticatorControlComponent
- * @description Permet d’afficher l’état courant de l’authenticator et de proposer
- * des actions de gestion (activation si non activé, désactivation, suppression) avec
- * éventuellement un champ de confirmation (TOTP code) pour ces opérations.
+ * @description Affiche l’état courant et propose activation (si désactivé), désactivation et suppression.
  */
 @Component({
   selector: 'custom-authenticator-control',
@@ -25,9 +23,12 @@ import { AuthenticatorDto } from '../models/dto/authenticator.dto';
   animations: fuseAnimations,
 })
 export class AuthenticatorControlComponent implements OnInit {
-  loading: boolean = false;
-  message: string = '';
-  error: string = '';
+  /** Événement émis lorsqu'on supprime l'authenticator */
+  @Output() authenticatorDeleted = new EventEmitter<void>();
+
+  loading = false;
+  message = '';
+  error = '';
   authenticator: AuthenticatorDto | null = null;
   controlForm: FormGroup;
 
@@ -41,13 +42,9 @@ export class AuthenticatorControlComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Charge l'état de l'authenticator
     this.loadAuthenticator();
   }
 
-  /**
-   * Charge l’authenticator depuis le backend.
-   */
   loadAuthenticator(): void {
     this.loading = true;
     this.authenticatorService.getAuthenticator()
@@ -62,9 +59,6 @@ export class AuthenticatorControlComponent implements OnInit {
       });
   }
 
-  /**
-   * Active l’authenticator en cas d’état non activé.
-   */
   activateAuthenticator(): void {
     if (this.controlForm.invalid) {
       return;
@@ -88,10 +82,6 @@ export class AuthenticatorControlComponent implements OnInit {
       });
   }
 
-  /**
-   * Désactive l’authenticator.
-   * Le champ TOTP peut être utilisé en confirmation (actuellement non transmis à l’API).
-   */
   disableAuthenticator(): void {
     this.loading = true;
     this.authenticatorService.disableAuthenticator()
@@ -111,10 +101,6 @@ export class AuthenticatorControlComponent implements OnInit {
       });
   }
 
-  /**
-   * Supprime l’authenticator.
-   * Le champ TOTP peut être utilisé en confirmation (actuellement non transmis à l’API).
-   */
   deleteAuthenticator(): void {
     this.loading = true;
     this.authenticatorService.deleteAuthenticator()
@@ -123,8 +109,9 @@ export class AuthenticatorControlComponent implements OnInit {
         next: (res) => {
           this.message = res.message || 'Authenticator deleted successfully.';
           this.error = '';
-          // Réinitialise les données locales
           this.authenticator = null;
+          // On notifie le parent pour revenir en setup
+          this.authenticatorDeleted.emit();
         },
         error: (err) => {
           this.error = err.error?.message || 'Failed to delete authenticator.';

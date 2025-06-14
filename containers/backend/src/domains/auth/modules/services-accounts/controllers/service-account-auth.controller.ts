@@ -20,8 +20,8 @@ import { IssueTokenResponseDto } from '../models/dto/issue-token-response.dto';
  * Route publique.
  * @category Domains/Auth
  */
-@ApiTags('Service Account Auth')
-@Controller('')
+@ApiTags('AUTH - Service Account Auth')
+@Controller()
 export class ServiceAccountAuthController {
   constructor(
     private readonly auth: ServiceAccountAuthService,

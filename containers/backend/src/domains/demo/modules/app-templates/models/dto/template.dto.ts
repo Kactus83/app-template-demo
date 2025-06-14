@@ -14,4 +14,7 @@ export class TemplateDto {
 
   @ApiProperty({ example: 'Template minimal pour un blog', required: false })
   @Expose() description?: string;
+
+  @ApiProperty({ example: '/uploads/blog-template.zip', description: 'URL publique du template' })
+  @Expose() publicUrl!: string;
 }

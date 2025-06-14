@@ -1,7 +1,7 @@
 # Contiens les informations du template
 # Ne pas éditer ni supprimer ce fichier
-name: Default Template
+name: Demo Template
 version: "1.0.0"
-description: "Template de base."
+description: "Template de démo. Version allégée sans Vault. Contiens les templates et le backend permettant le foncitonnement du cli."
 prebuildCommand: "docker-compose -f docker-compose.prebuild.yml up --abort-on-container-exit prebuild"
 devRunCommand: "docker-compose -f docker-compose.dev.yml up"

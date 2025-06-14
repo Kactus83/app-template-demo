@@ -4,11 +4,32 @@
   <!-- Avatar preview & upload -->
   <div class="flex flex-col items-center">
     <img
-      [src]="previewUrl || 'assets/images/avatars/default.jpg'"
+      *ngIf="previewUrl; else defaultAvatar"
+      [src]="previewUrl"
       alt="Avatar"
-      class="w-32 h-32 rounded-full object-cover mb-4"
+      class="w-32 h-32 rounded-full object-cover"
     />
-    <input type="file" accept="image/*" (change)="onFileChange($event)" />
+
+    <!-- Template pour l'avatar par défaut -->
+    <ng-template #defaultAvatar>
+      <span
+        class="flex items-center justify-center w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700"
+      >
+        <mat-icon
+          svgIcon="heroicons_solid:user-circle"
+          class="icon-size-32 text-gray-500 dark:text-gray-300"
+        ></mat-icon>
+      </span>
+    </ng-template>
+    
+
+    <!-- Input de téléchargement -->
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onFileChange($event)"
+      class="mt-2"
+    />
   </div>
 
   <form [formGroup]="profileForm" (ngSubmit)="save()">

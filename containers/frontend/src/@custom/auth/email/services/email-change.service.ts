@@ -32,7 +32,7 @@ export class EmailChangeService {
    */
   requestEmailChange(newEmail: string): Observable<{ message: string }> {
     const dto: ChangeEmailDto = { newEmail };
-    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/change-email`, dto);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/email/change-email`, dto);
   }
 
   /**
@@ -42,6 +42,6 @@ export class EmailChangeService {
    */
   confirmEmailChange(token: string): Observable<{ message: string }> {
     const dto: ConfirmEmailChangeDto = { token };
-    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/confirm-email-change`, dto);
+    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/email/confirm-email-change`, dto);
   }
 }

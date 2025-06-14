@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IStorageAdapter } from '../interfaces/storage-adapter.interface';
+import { Readable } from 'stream';
 
 /**
  * Service de stockage centralisé.
@@ -41,5 +42,15 @@ export class StorageService {
    */
   async deleteFile(fileName: string): Promise<void> {
     return this.storageAdapter.deleteFile(fileName);
+  }
+
+  /**
+   * Lecture d'un fichier depuis le stockage.
+   *
+   * @param path - Chemin (clé) du fichier dans le stockage.
+   * @returns Flux de lecture et taille du fichier.
+   */
+  async readFileStream(path: string): Promise<{ stream: Readable; size: number }> {
+    return this.storageAdapter.readFileStream(path);
   }
 }

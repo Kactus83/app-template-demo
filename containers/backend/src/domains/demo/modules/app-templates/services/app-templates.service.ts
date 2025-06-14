@@ -5,12 +5,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TemplateRepository } from '../repositories/template.repository';
-import { join } from 'path';
-import { existsSync, statSync, createReadStream } from 'fs';
-import { Readable } from 'stream';
+import { StorageService } from 'src/core/modules/storage/services/storage.service';
 import { TemplateDto } from '../models/dto/template.dto';
 import { CreateTemplateDto } from '../models/dto/create-template.dto';
-import { StorageService } from 'src/core/modules/storage/services/storage.service';
+import { join } from 'path';
+import { existsSync, statSync } from 'fs';
+import { Readable } from 'stream';
 
 /**
  * Logique métier pour la démo CLI :
@@ -26,14 +26,19 @@ export class AppTemplatesService implements OnModuleInit {
   /** fichiers ZIP à seed */
   private readonly seedFiles = [
     {
-      fileName: 'app-template.zip',
-      name: 'app-template',
+      fileName:    'app-template.zip',
+      name:        'app-template',
       description: 'Version complète incluant Vault',
     },
     {
-      fileName: 'app-template-light.zip',
-      name: 'app-template-light',
+      fileName:    'app-template-light.zip',
+      name:        'app-template-light',
       description: 'Version allégée sans Vault',
+    },
+    {
+      fileName:    'app-template-light-demo.zip',
+      name:        'app-template-light-demo',
+      description: 'Version avec contenu de démonstration / backend pour le cli node js',
     },
   ];
 
@@ -42,7 +47,9 @@ export class AppTemplatesService implements OnModuleInit {
     private readonly storageService: StorageService,
   ) {}
 
-  /** Seed initial des deux templates */
+  /**
+   * Seed initial des deux templates, si la table est vide.
+   */
   async onModuleInit(): Promise<void> {
     const all = await this.repo.findAll();
     if (all.length > 0) {
@@ -50,113 +57,150 @@ export class AppTemplatesService implements OnModuleInit {
       return;
     }
     this.logger.log('Seed initial des templates CLI…');
+
     for (const tpl of this.seedFiles) {
-      const fullPath = join(process.cwd(), 'public', 'templates', tpl.fileName);
-      if (!existsSync(fullPath)) {
-        this.logger.error(`Seed introuvable : ${fullPath}`);
+      // 1) Source du ZIP dans public/templates
+      const sourcePath = join(
+        process.cwd(),
+        'public',
+        'templates',
+        tpl.fileName,
+      );
+      if (!existsSync(sourcePath)) {
+        this.logger.error(`Seed introuvable : ${sourcePath}`);
         continue;
       }
-      const size = statSync(fullPath).size;
-      // on utilise StorageService pour copier dans storage (uploads/templates)
-      const dest = `templates/${tpl.fileName}`;
-      const url = await this.storageService.uploadFile(fullPath, dest);
+
+      // 2) Taille du fichier
+      const size = statSync(sourcePath).size;
+
+      // 3) Clé interne et URL publique
+      const filePath  = `templates/${tpl.fileName}`;
+      const publicUrl = await this.storageService.uploadFile(
+        sourcePath,
+        filePath,
+      );
+
+      // 4) Persistance en base
       await this.repo.createTemplate({
-        name: tpl.name,
+        name:        tpl.name,
         description: tpl.description,
-        filePath: url,
+        filePath,    // clé interne
+        publicUrl,   // URL exposée
         size,
       });
-      this.logger.log(`– Seeded '${tpl.name}' → ${url}`);
+
+      this.logger.log(`– Seeded '${tpl.name}' → ${publicUrl}`);
     }
   }
 
   /**
-   * Liste l’ensemble des templates.
+   * Liste *tous* les templates (avec leur URL publique).
    */
   async listTemplates(): Promise<TemplateDto[]> {
     const all = await this.repo.findAll();
-    return all.map(t => ({ id: t.id, name: t.name, description: t.description }));
+    return all.map(t => ({
+      id:          t.id,
+      name:        t.name,
+      description: t.description,
+      publicUrl:   t.publicUrl,
+    }));
   }
 
   /**
-   * Liste les templates attribués à un utilisateur.
+   * Liste les templates « attribués » à l’utilisateur courant.
    * @param userId ID interne de l’utilisateur.
    */
   async listUserTemplates(userId: number): Promise<TemplateDto[]> {
     const list = await this.repo.findUserTemplates(userId);
-    return list.map(t => ({ id: t.id, name: t.name, description: t.description }));
+    return list.map(t => ({
+      id:          t.id,
+      name:        t.name,
+      description: t.description,
+      publicUrl:   t.publicUrl,
+    }));
   }
 
   /**
    * Prépare le flux de téléchargement du ZIP,
-   * incrémente le compteur de l’utilisateur.
+   * incrémente le compteur pour ce user/template.
    * @param userId ID interne de l’utilisateur.
-   * @param templateId ID du template.
-   * @throws NotFoundException si le template n’existe pas.
+   * @param templateId ID interne du template.
+   * @throws NotFoundException si le template ou le fichier n’existe pas.
    */
   async getTemplateFile(
     userId: number,
     templateId: number,
   ): Promise<{ fileName: string; size: number; stream: Readable }> {
-    const tpl = await this.repo.findAll().then(list => list.find(t => t.id === templateId));
+    // 1) Récupération du template
+    const tpl = (await this.repo.findAll()).find(t => t.id === templateId);
     if (!tpl) {
       throw new NotFoundException(`Template id=${templateId} introuvable`);
     }
+
+    // 2) Incrément du compteur
     await this.repo.incrementDownloadCount(userId, templateId);
 
-    const fullPath = join(process.cwd(), tpl.filePath);
-    const stat = await new Promise<{ size: number }>((res, rej) =>
-      createReadStream(fullPath)
-        .on('open', () => res({ size: statSync(fullPath).size }))
-        .on('error', rej),
+    // 3) Lecture du fichier via le StorageService
+    //    (implémentation ci-dessous)
+    const { stream, size } = await this.storageService.readFileStream(
+      tpl.filePath,
     );
+
     return {
       fileName: `${tpl.name}.zip`,
-      size: stat.size,
-      stream: createReadStream(fullPath),
+      size,
+      stream,
     };
   }
 
   /**
-   * Récupère les stats globales tous templates confondus.
+   * Statistiques globales de téléchargements pour tous les templates.
    */
   async getAllStats(): Promise<{ templateId: number; total: number }[]> {
     return this.repo.statsAllTemplates();
   }
 
   /**
-   * Récupère les stats par utilisateur pour un template.
+   * Statistiques détaillées des téléchargements pour un template donné.
    * @param templateId ID du template.
    */
-  async getStatsFor(templateId: number): Promise<{ userId: number; count: number }[]> {
+  async getStatsFor(
+    templateId: number,
+  ): Promise<{ userId: number; count: number }[]> {
     return this.repo.statsForTemplate(templateId);
   }
 
   /**
    * Création d’un template (admins).
-   * @param dto nom + description
-   * @param file ZIP uploadé par multer (temporaire)
+   * @param dto données de création (name, description).
+   * @param file fichier ZIP uploadé par multer.
    */
   async createTemplate(
     dto: CreateTemplateDto,
-    file: any, // MulterFile pose des soucis de typage mais c'est pourtant le type réel.
+    file: any, // type multer.File
   ): Promise<TemplateDto> {
-    // 1. Upload via StorageService dans /uploads/templates
-    const dest = `templates/${file.filename}`;
-    const url = await this.storageService.uploadFile(file.path, dest);
+    // 1) Copie du tmp → /uploads/templates/…
+    const filePath  = `templates/${file.filename}`;
+    const publicUrl = await this.storageService.uploadFile(
+      file.path,
+      filePath,
+    );
 
-    // 2. Persist
+    // 2) Persistance en base
     const tpl = await this.repo.createTemplate({
-      name: dto.name,
+      name:        dto.name,
       description: dto.description ?? null,
-      filePath: url,
-      size: file.size,
+      filePath,
+      publicUrl,
+      size:        file.size,
     });
 
     return {
-      id: tpl.id,
-      name: tpl.name,
+      id:          tpl.id,
+      name:        tpl.name,
       description: tpl.description,
+      publicUrl:   tpl.publicUrl,
     };
   }
 }

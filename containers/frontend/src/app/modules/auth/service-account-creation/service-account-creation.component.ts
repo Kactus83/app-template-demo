@@ -2,6 +2,7 @@ import {
   Component,
   OnInit,
   ViewChild,
+  ChangeDetectionStrategy,
   ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -29,18 +30,19 @@ import { ServiceAccountCreateComponent } from '@custom/auth/service-accounts/com
   ],
   templateUrl: './service-account-creation.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: fuseAnimations,
 })
 export class AuthServiceAccountCreationComponent implements OnInit {
-  /** DTO fourni par le CLI via queryParams */
-  saDto!: CreateServiceAccountDto;
-
-  @ViewChild(ServiceAccountCreateComponent)
+  @ViewChild('saCreate', { static: true })
   private saCreateComp!: ServiceAccountCreateComponent;
 
-  /** Alert pour erreurs éventuelles */
+  saDto!: CreateServiceAccountDto;
+  isCreating = false;
+  creds: CreateServiceAccountResponseDto | null = null;
+
   alert: { type: FuseAlertType; message: string } = {
-    type: 'error',
+    type: 'success',
     message: '',
   };
   showAlert = false;
@@ -55,46 +57,65 @@ export class AuthServiceAccountCreationComponent implements OnInit {
       ? qp.get('allowedIps')!.split(',')
       : [];
 
-    // Transformation de la chaîne "TARGET:PERM,OTHER:PERM" en scope DTO
     const scopesParam = qp.get('scopes') || 'USER:READ';
-    const scopes: CreateServiceAccountScopeDto[] = scopesParam
-      .split(',')
-      .map(pair => {
+    const scopes: CreateServiceAccountScopeDto[] = scopesParam.split(',').map(
+      (pair) => {
         const [targetRaw, permissionRaw] = pair.split(':');
-        const target = targetRaw as ScopeTarget;
-        const permission = permissionRaw as ScopePermission;
-        return { target, permission };
-      });
+        return {
+          target: targetRaw as ScopeTarget,
+          permission: permissionRaw as ScopePermission,
+        };
+      }
+    );
 
     this.saDto = { name, validTo, allowedIps, scopes };
   }
 
-  /** Déclenche la création du Service Account via le composant enfant */
   onCreate(): void {
     this.showAlert = false;
+    this.isCreating = true;
     this.saCreateComp.create();
   }
 
-  /**
-   * Lorsque la création réussit, on génère et télécharge
-   * automatiquement le JSON contenant clientId & secret.
-   */
   onCreated(creds: CreateServiceAccountResponseDto): void {
+    this.isCreating = false;
+    this.creds = creds;
+    this.alert = {
+      type: 'success',
+      message: 'Service Account créé avec succès !',
+    };
+    this.showAlert = true;
+  }
+
+  onError(error: any): void {
+    console.error('Erreur création Service Account', error);
+    this.isCreating = false;
+    this.alert = {
+      type: 'error',
+      message: 'Échec de la création. Veuillez réessayer.',
+    };
+    this.showAlert = true;
+  }
+
+  onDownload(): void {
+    if (!this.creds) {
+      return;
+    }
     const payload = {
-      clientId: creds.clientId,
-      clientSecret: creds.secret,
-      scopes: creds.scopes.map(s => `${s.target}:${s.permission}`),
-      validTo: creds.validTo,
-      allowedIps: creds.allowedIps,
+      clientId: this.creds.clientId,
+      clientSecret: this.creds.secret,
+      scopes: this.creds.scopes.map((s) => `${s.target}:${s.permission}`),
+      validTo: this.creds.validTo,
+      allowedIps: this.creds.allowedIps,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: 'application/json',
     });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sa-credentials-${creds.clientId}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sa-credentials-${this.creds.clientId}.json`;
+    link.click();
+    window.URL.revokeObjectURL(url);
   }
 }

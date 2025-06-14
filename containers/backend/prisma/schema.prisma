@@ -163,7 +163,7 @@ model UserServiceAccount {
   id               String                   @id @default(uuid())
   userId           Int
   name             String                   // ex. "CLI principal", "Webhook Bot"
-  clientId         String                   @unique
+  clientId         String                   @unique @default(uuid())
   clientSecret     String                   // hashé (bcrypt/argon2)
   validFrom        DateTime                 @default(now())
   validTo          DateTime?                // null = illimité
@@ -479,6 +479,7 @@ model Template {
   name        String    @unique
   description String?
   filePath    String
+  publicUrl   String  // URL publique (ex: "/uploads/…")
   size        Int?
   createdAt   DateTime  @default(now())
 

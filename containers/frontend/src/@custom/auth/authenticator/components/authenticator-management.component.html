@@ -12,10 +12,17 @@
   </div>
 
   <div *ngIf="!loading && !error">
-    <!-- Si aucun authenticator n'est configuré, affiche le setup -->
-    <custom-authenticator-setup *ngIf="!hasAuthenticator"></custom-authenticator-setup>
-    <!-- Sinon, affiche le contrôle -->
-    <custom-authenticator-control *ngIf="hasAuthenticator"></custom-authenticator-control>
+    <!-- Tant que pas activé, on reste en setup -->
+    <custom-authenticator-setup
+      *ngIf="!hasAuthenticatorEnabled"
+      (authenticatorActivated)="onAuthenticatorActivated($event)"
+    ></custom-authenticator-setup>
+
+    <!-- Une fois activé, on passe en control -->
+    <custom-authenticator-control
+      *ngIf="hasAuthenticatorEnabled"
+      (authenticatorDeleted)="onAuthenticatorDeleted()"
+    ></custom-authenticator-control>
   </div>
 
   <div class="footer">

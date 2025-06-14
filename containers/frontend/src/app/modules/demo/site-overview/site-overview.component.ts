@@ -7,6 +7,7 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FuseCardComponent } from '@fuse/components/card';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'site-overview',
@@ -14,7 +15,13 @@ import { FuseCardComponent } from '@fuse/components/card';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [MatButtonModule, NgClass, FuseCardComponent, MatIconModule],
+    imports: [
+        MatButtonModule,
+        NgClass,
+        FuseCardComponent,
+        MatIconModule,
+        RouterLink
+    ],
 })
 export class SiteOverviewComponent {
     /**

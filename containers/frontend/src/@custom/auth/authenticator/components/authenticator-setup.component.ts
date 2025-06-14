@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { AuthenticatorService } from '../services/authenticator.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -11,8 +11,7 @@ import { AuthenticatorDto } from '../models/dto/authenticator.dto';
 
 /**
  * @component AuthenticatorSetupComponent
- * @description Permet de créer l’authenticator et d’afficher simultanément le QR code ainsi
- * que le formulaire d’activation (saisie du code TOTP). Une fois activé, l’état est mis à jour.
+ * @description Permet de créer l’authenticator et d’afficher le QR code + formulaire d’activation.
  */
 @Component({
   selector: 'custom-authenticator-setup',
@@ -24,9 +23,12 @@ import { AuthenticatorDto } from '../models/dto/authenticator.dto';
   animations: fuseAnimations,
 })
 export class AuthenticatorSetupComponent implements OnInit {
-  loading: boolean = false;
-  message: string = '';
-  error: string = '';
+  /** Événement émis lors de l'activation réussie */
+  @Output() authenticatorActivated = new EventEmitter<AuthenticatorDto>();
+
+  loading = false;
+  message = '';
+  error = '';
   authenticator: AuthenticatorDto | null = null;
   activationForm: FormGroup;
 
@@ -40,13 +42,11 @@ export class AuthenticatorSetupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Charge l'authenticator existant ou le crée si inexistant
     this.loadAuthenticator();
   }
 
   /**
-   * Charge l’authenticator depuis le backend.
-   * En cas d'absence (404), il est créé automatiquement.
+   * Charge l’authenticator existant ou le crée si inexistant (404).
    */
   loadAuthenticator(): void {
     this.loading = true;
@@ -55,14 +55,15 @@ export class AuthenticatorSetupComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.authenticator = res.authenticator;
-          // Si l'authenticator est déjà activé, on indique le message
           if (this.authenticator && this.authenticator.enabled) {
             this.message = 'Authenticator is already activated.';
+            // On notifie directement le parent si déjà activé
+            this.authenticatorActivated.emit(this.authenticator);
           }
         },
         error: (err) => {
           if (err.status === 404) {
-            // Aucun authenticator trouvé, on le crée
+            // Crée le nouvel authenticator
             this.createAuthenticator();
           } else {
             this.error = err.error?.message || 'Unable to retrieve authenticator status.';
@@ -72,7 +73,7 @@ export class AuthenticatorSetupComponent implements OnInit {
   }
 
   /**
-   * Crée un nouvel authenticator et récupère le QR code et le secret.
+   * Crée un nouvel authenticator et récupère QR + secret.
    */
   createAuthenticator(): void {
     this.loading = true;
@@ -81,7 +82,6 @@ export class AuthenticatorSetupComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.authenticator = res.authenticator;
-          // Gestion de la différence de casse entre 'qrCodeUrl' et 'qrCodeURL'
           if (res.qrCodeUrl) {
             this.authenticator.qrCodeURL = res.qrCodeUrl;
           }
@@ -115,6 +115,8 @@ export class AuthenticatorSetupComponent implements OnInit {
           }
           this.message = res.message || 'Authenticator activated successfully.';
           this.error = '';
+          // On notifie le parent pour passer en control
+          this.authenticatorActivated.emit(this.authenticator!);
         },
         error: (err) => {
           this.error = err.error?.message || 'Failed to activate authenticator.';
@@ -124,7 +126,7 @@ export class AuthenticatorSetupComponent implements OnInit {
   }
 
   /**
-   * Permet de rafraîchir l’authenticator (génération d’un nouveau QR code et secret).
+   * Génère un nouveau QR + secret.
    */
   refreshAuthenticator(): void {
     this.createAuthenticator();

@@ -6,6 +6,7 @@ import { UserServiceAccountRepository } from '../repositories/user-service-accou
 import { CreateServiceAccountDto } from '../models/dto/create-service-account.dto';
 import { UpdateServiceAccountDto } from '../models/dto/update-service-account.dto';
 import { ServiceAccountDto } from '../models/dto/service-account.dto';
+import { CreateServiceAccountResponseDto } from '../models/dto/create-service-account-response.dto';
 
 /**
  * Service de gestion des comptes de service (UserServiceAccount)
@@ -27,15 +28,14 @@ export class ServiceAccountsManagementService {
   async create(
     userId: number,
     dto: CreateServiceAccountDto,
-  ): Promise<ServiceAccountDto & { clientSecret: string }> {
-    const clientId = randomBytes(16).toString('hex');
-    const clientSecret = randomBytes(ServiceAccountsManagementService.SECRET_LENGTH).toString('hex');
-    const clientSecretHash = await bcrypt.hash(clientSecret, 10);
+  ): Promise<CreateServiceAccountResponseDto> {
+    const secret = randomBytes(ServiceAccountsManagementService.SECRET_LENGTH).toString('hex');
+    const clientSecretHash = await bcrypt.hash(secret, 10);
 
+    // Prisma générera le clientId via @default(uuid())
     const account = await this.repo.create({
       userId,
       name: dto.name,
-      clientId,
       clientSecretHash,
       validTo: dto.validTo ? new Date(dto.validTo) : null,
       allowedIps: dto.allowedIps ?? [],
@@ -50,7 +50,7 @@ export class ServiceAccountsManagementService {
     const scopes = await this.repo.listScopes(account.id);
     const accountDto = plainToInstance(ServiceAccountDto, { ...account, scopes });
 
-    return { ...accountDto, clientSecret };
+    return { ...accountDto, secret };
   }
 
   /**

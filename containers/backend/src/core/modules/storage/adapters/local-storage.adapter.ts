@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
+import { Readable } from 'stream';
 
 const copyFile = promisify(fs.copyFile);
 
@@ -25,7 +26,9 @@ export class LocalStorageAdapter implements IStorageAdapter {
    * Répertoire de base pour le stockage local.
    * Peut être configuré via la variable d'environnement LOCAL_STORAGE_PATH.
    */
-  private readonly baseDir = process.env.LOCAL_STORAGE_PATH || path.join(__dirname, '../../../uploads');
+  private readonly baseDir =
+    process.env.LOCAL_STORAGE_PATH ||
+    path.join(__dirname, '../../../uploads');
 
   /**
    * Upload d'un fichier vers le stockage local.
@@ -42,7 +45,10 @@ export class LocalStorageAdapter implements IStorageAdapter {
       // L'URL relative sera exposée via votre ServeStaticModule.
       return `/uploads/${destination}`;
     } catch (error) {
-      this.logger.error('Erreur lors de l’upload du fichier en stockage local', error);
+      this.logger.error(
+        'Erreur lors de l’upload du fichier en stockage local',
+        error,
+      );
       throw error;
     }
   }
@@ -58,7 +64,33 @@ export class LocalStorageAdapter implements IStorageAdapter {
       const filePath = path.join(this.baseDir, fileName);
       await fs.promises.unlink(filePath);
     } catch (error) {
-      this.logger.error('Erreur lors de la suppression du fichier en stockage local', error);
+      this.logger.error(
+        'Erreur lors de la suppression du fichier en stockage local',
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Lecture d'un fichier depuis le stockage local.
+   *
+   * @param storagePath - Chemin relatif (ou clé) du fichier dans le stockage.
+   * @returns Une promesse qui se résout en renvoyant le flux de lecture et la taille du fichier.
+   */
+  async readFileStream(
+    storagePath: string,
+  ): Promise<{ stream: Readable; size: number }> {
+    const fullPath = path.join(this.baseDir, storagePath);
+    try {
+      const stats = await fs.promises.stat(fullPath);
+      const stream = fs.createReadStream(fullPath);
+      return { stream, size: stats.size };
+    } catch (error) {
+      this.logger.error(
+        `Erreur lors de la lecture du fichier en stockage local : ${storagePath}`,
+        error,
+      );
       throw error;
     }
   }
